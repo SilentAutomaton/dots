@@ -104,7 +104,7 @@ sudo -A udevadm control --reload && sudo -A udevadm trigger -s drm -s pci
 - `81-dri-names.rules` names the Intel card `/dev/dri/intel-igpu`, and
   the "Hyprland (Intel only)" session in GDM runs `start-hyprland-igpu`, which
   gives Hyprland only that card and Mesa's EGL only: NVIDIA's EGL driver opens
-  the card as soon as it loads. `hypr/modules/env.lua` gives launched programs
+  the card as soon as it loads. `hypr/modules/execs.lua` gives launched programs
   both drivers back, so `prime-run` still works. GDM does not pass these
   variables from environment.d, hence the wrapper. Otherwise Hyprland holds
   the NVIDIA card open and it never sleeps.

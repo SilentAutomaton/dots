@@ -11,7 +11,3 @@ hl.env("TERMINAL", "kitty -1")
 -- Intel UHD 630: hardware video decoding in Firefox-based browsers.
 hl.env("LIBVA_DRIVER_NAME", "iHD")
 hl.env("MOZ_DRM_DEVICE", "/dev/dri/renderD128")
-
--- start-hyprland-igpu starts Hyprland with Mesa's EGL only,
--- so it leaves the NVIDIA card asleep. Programs it launches get both drivers back.
-hl.env("__EGL_VENDOR_LIBRARY_FILENAMES", "/usr/share/glvnd/egl_vendor.d/10_nvidia.json:/usr/share/glvnd/egl_vendor.d/50_mesa.json")

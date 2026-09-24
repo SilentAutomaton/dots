@@ -2,7 +2,7 @@
 # Starts Hyprland on the Intel card only, so the NVIDIA card can sleep.
 # AQ_DRM_DEVICES keeps Aquamarine off the NVIDIA card; Mesa-only EGL stops
 # NVIDIA's EGL driver, which opens the card as soon as it loads.
-# hypr/modules/env.lua gives launched programs both EGL drivers back.
+# hypr/modules/execs.lua gives launched programs both EGL drivers back.
 export AQ_DRM_DEVICES=/dev/dri/intel-igpu
 export __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/50_mesa.json
 exec /usr/bin/start-hyprland "$@"

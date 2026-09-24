@@ -1,4 +1,9 @@
 hl.on("hyprland.start", function()
+    -- start-hyprland-igpu hides NVIDIA's EGL driver so Hyprland leaves the card
+    -- asleep. The renderer is up by now, so programs launched from here on get
+    -- both drivers back and prime-run still works. Set earlier, in env.lua, it
+    -- would reach Hyprland itself: the config is read before EGL starts.
+    hl.env("__EGL_VENDOR_LIBRARY_FILENAMES", "/usr/share/glvnd/egl_vendor.d/10_nvidia.json:/usr/share/glvnd/egl_vendor.d/50_mesa.json")
     hl.exec_cmd("qs -c shell")
     hl.exec_cmd("gnome-keyring-daemon --start --components=secrets")
     hl.exec_cmd("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1")
