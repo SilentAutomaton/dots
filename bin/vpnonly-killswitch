@@ -23,7 +23,7 @@ killswitch_state() {
 }
 
 ifaces() {
-    sudo -A jq -r '.operator.list[] | select(.operand=="iface.out") | .data' "$REFERENCE" \
+    jq -r '.operator.list[] | select(.operand=="iface.out") | .data' "$REFERENCE" \
         | sed -E 's/^\^\(//; s/\)\$$//' | tr '|' '\n'
 }
 

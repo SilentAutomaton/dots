@@ -84,5 +84,13 @@ Item {
                 }
             }
         }
+
+        Loader {
+            active: Config.options.bar.utilButtons.showTunnelStatus
+            visible: Config.options.bar.utilButtons.showTunnelStatus
+            sourceComponent: TunnelIndicator {
+                Layout.alignment: Qt.AlignVCenter
+            }
+        }
     }
 }

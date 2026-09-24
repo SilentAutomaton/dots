@@ -1,5 +1,6 @@
-# The agent kill switch button: exactly these three commands, nothing else.
+# The agent kill switch and the tunnel indicator: exactly these commands, nothing else.
 # The sources are root-owned, so no user process can change what gets installed.
 %wheel ALL=(root) NOPASSWD: /usr/bin/install -m 600 /etc/opensnitchd/killswitch/000-aa-killswitch-lo.json /etc/opensnitchd/killswitch/000-ab-killswitch-deny.json /etc/opensnitchd/killswitch/000-ac-killswitch-deny-gemini.json /etc/opensnitchd/rules/
 %wheel ALL=(root) NOPASSWD: /usr/bin/rm -f /etc/opensnitchd/rules/000-aa-killswitch-lo.json /etc/opensnitchd/rules/000-ab-killswitch-deny.json /etc/opensnitchd/rules/000-ac-killswitch-deny-gemini.json
 %wheel ALL=(root) NOPASSWD: /usr/local/bin/vpnonly-cut ""
+%wheel ALL=(root) NOPASSWD: /usr/bin/awg show all latest-handshakes

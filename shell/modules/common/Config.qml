@@ -160,6 +160,7 @@ Singleton {
                     property bool showOcr: false
                     property bool showMicToggle: true
                     property bool showAgentKillswitch: true
+                    property bool showTunnelStatus: true
                 }
                 property JsonObject workspaces: JsonObject {
                     property bool monochromeIcons: false

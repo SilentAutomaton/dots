@@ -78,6 +78,12 @@ SettingsPage {
             onCheckedChanged: Config.options.bar.utilButtons.showAgentKillswitch = checked
         }
         ConfigSwitch {
+            buttonIcon: "vpn_lock"
+            text: "Tunnel status"
+            checked: Config.options.bar.utilButtons.showTunnelStatus
+            onCheckedChanged: Config.options.bar.utilButtons.showTunnelStatus = checked
+        }
+        ConfigSwitch {
             buttonIcon: "notifications"
             text: "Unread notification count"
             checked: Config.options.bar.indicators.notifications.showUnreadCount
