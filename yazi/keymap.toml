@@ -1,0 +1,238 @@
+#:schema https://yazi-rs.github.io/schemas/keymap.json
+
+# Navigation -----------------------------------------------------------------
+[[mgr.prepend_keymap]]
+on   = "l"
+run  = "plugin smart-enter"
+desc = "Enter the directory, or open the file"
+
+[[mgr.prepend_keymap]]
+on   = "<Enter>"
+run  = "plugin smart-enter"
+desc = "Enter the directory, or open the file"
+
+[[mgr.prepend_keymap]]
+on   = "f"
+run  = "plugin jump-to-char"
+desc = "Jump to a file by its first character"
+
+[[mgr.prepend_keymap]]
+on   = "F"
+run  = "plugin smart-filter"
+desc = "Live filter"
+
+[[mgr.prepend_keymap]]
+on   = ";"
+run  = "plugin bunny"
+desc = "Bookmarks"
+
+[[mgr.prepend_keymap]]
+on   = "'"
+run  = "plugin bunny fuzzy"
+desc = "Fuzzy search bookmarks"
+
+[[mgr.prepend_keymap]]
+on   = [ "g", "r" ]
+run  = 'shell -- ya emit cd "$(git rev-parse --show-toplevel)"'
+desc = "Go to the git root"
+
+# Panes and preview ----------------------------------------------------------
+[[mgr.prepend_keymap]]
+on   = "T"
+run  = "plugin toggle-pane max-preview"
+desc = "Maximize or restore the preview pane"
+
+[[mgr.prepend_keymap]]
+on   = "<C-t>"
+run  = "plugin toggle-pane min-preview"
+desc = "Show or hide the preview pane"
+
+[[mgr.prepend_keymap]]
+on   = "+"
+run  = "plugin zoom 1"
+desc = "Zoom in the preview"
+
+[[mgr.prepend_keymap]]
+on   = "-"
+run  = "plugin zoom -1"
+desc = "Zoom out the preview"
+
+# Clipboard and drag & drop --------------------------------------------------
+[[mgr.prepend_keymap]]
+on   = "<C-n>"
+run  = 'shell -- dragon-drop -x -i -T %s'
+desc = "Drag & drop the selection (works inside tmux)"
+
+[[mgr.prepend_keymap]]
+on   = "<A-y>"
+run  = "plugin wl-clipboard"
+desc = "Copy the files themselves to the Wayland clipboard"
+
+# `y` became a chord prefix, so keep yank reachable
+[[mgr.prepend_keymap]]
+on   = [ "y", "y" ]
+run  = "yank"
+desc = "Yank the selection"
+
+[[mgr.prepend_keymap]]
+on   = [ "y", "c" ]
+run  = "plugin copy-file-contents -- plain"
+desc = "Copy the file contents"
+
+# File operations ------------------------------------------------------------
+[[mgr.prepend_keymap]]
+on   = "p"
+run  = "plugin smart-paste"
+desc = "Paste into the hovered directory"
+
+[[mgr.prepend_keymap]]
+on   = [ "c", "m" ]
+run  = "plugin chmod"
+desc = "chmod the selection"
+
+[[mgr.prepend_keymap]]
+on   = [ "c", "a" ]
+run  = "plugin archive"
+desc = "Compress the selection"
+
+[[mgr.prepend_keymap]]
+on   = [ "c", "x" ]
+run  = "plugin ouch"
+desc = "Extract the selection"
+
+[[mgr.prepend_keymap]]
+on   = "u"
+run  = "plugin restore"
+desc = "Restore files from the trash"
+
+[[mgr.prepend_keymap]]
+on   = [ "M", "m" ]
+run  = "plugin gvfs -- select-then-mount --jump"
+desc = "Mount a device and jump to it"
+
+[[mgr.prepend_keymap]]
+on   = [ "M", "u" ]
+run  = "plugin gvfs -- select-then-unmount"
+desc = "Unmount a device"
+
+[[mgr.prepend_keymap]]
+on   = [ "M", "U" ]
+run  = "plugin gvfs -- select-then-unmount --eject"
+desc = "Eject a device"
+
+[[mgr.prepend_keymap]]
+on   = [ "M", "R" ]
+run  = "plugin gvfs -- remount-current-cwd-device"
+desc = "Remount the device under cwd"
+
+[[mgr.prepend_keymap]]
+on   = [ "M", "a" ]
+run  = "plugin gvfs -- add-mount"
+desc = "Add a GVFS mount URI"
+
+[[mgr.prepend_keymap]]
+on   = [ "M", "e" ]
+run  = "plugin gvfs -- edit-mount"
+desc = "Edit a GVFS mount URI"
+
+[[mgr.prepend_keymap]]
+on   = [ "M", "r" ]
+run  = "plugin gvfs -- remove-mount"
+desc = "Remove a GVFS mount URI"
+
+[[mgr.prepend_keymap]]
+on   = [ "g", "m" ]
+run  = "plugin gvfs -- jump-to-device"
+desc = "Jump to a mounted device"
+
+[[mgr.prepend_keymap]]
+on   = [ "`", "`" ]
+run  = "plugin gvfs -- jump-back-prev-cwd"
+desc = "Jump back from the device"
+
+[[mgr.prepend_keymap]]
+on   = [ "g", "d" ]
+run  = "plugin diff"
+desc = "Diff the selected against the hovered file"
+
+# sudo fallbacks -------------------------------------------------------------
+[[mgr.prepend_keymap]]
+on   = [ "R", "p" ]
+run  = "plugin sudo -- paste"
+desc = "sudo paste"
+
+[[mgr.prepend_keymap]]
+on   = [ "R", "r" ]
+run  = "plugin sudo -- rename"
+desc = "sudo rename"
+
+[[mgr.prepend_keymap]]
+on   = [ "R", "d" ]
+run  = "plugin sudo -- remove"
+desc = "sudo remove"
+
+# Tooling --------------------------------------------------------------------
+[[mgr.prepend_keymap]]
+on   = [ "g", "i" ]
+run  = "plugin lazygit"
+desc = "Run lazygit here"
+
+[[mgr.prepend_keymap]]
+on   = ":"
+run  = "plugin command"
+desc = "Command palette"
+
+[[mgr.prepend_keymap]]
+on   = [ "P", "s" ]
+run  = "plugin projects save"
+desc = "Save the current project"
+
+[[mgr.prepend_keymap]]
+on   = [ "P", "l" ]
+run  = "plugin projects load"
+desc = "Load a project"
+
+[[mgr.prepend_keymap]]
+on   = [ "P", "P" ]
+run  = "plugin projects load_last"
+desc = "Load the last project"
+
+# `P` became a chord prefix, so keep force-paste reachable
+[[mgr.prepend_keymap]]
+on   = [ "P", "f" ]
+run  = "paste --force"
+desc = "Paste, overwriting"
+
+[[mgr.prepend_keymap]]
+on   = "q"
+run  = "plugin confirm-quit"
+desc = "Quit, asking when several tabs are open"
+
+# Preview scrolling for glow / hexyl / duckdb --------------------------------
+[[mgr.prepend_keymap]]
+on   = "<C-e>"
+run  = "seek 5"
+desc = "Scroll the preview down"
+
+[[mgr.prepend_keymap]]
+on   = "<C-y>"
+run  = "seek -5"
+desc = "Scroll the preview up"
+
+# duckdb: switch between the summary and the raw table
+[[mgr.prepend_keymap]]
+on   = "<C-s>"
+run  = "plugin duckdb"
+desc = "Toggle the table preview mode"
+
+# `;` and `:` were taken by bookmarks and the command palette, so the built-in
+# shell prompts move here
+[[mgr.prepend_keymap]]
+on   = "!"
+run  = "shell --interactive"
+desc = "Run a shell command"
+
+[[mgr.prepend_keymap]]
+on   = "#"
+run  = "shell --block --interactive"
+desc = "Run a shell command and wait for it"

@@ -1,0 +1,106 @@
+# Colorize grep output (good for log files)
+alias grep='grep --color=auto'
+alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
+
+# adding flags
+alias df='df -h'                          # human-readable sizes
+alias free='free -m'                      # show sizes in MB
+
+# ps
+alias psa="ps auxf"
+alias psgrep="ps aux | grep -v grep | grep -i -e VSZ -e"
+alias psmem='ps auxf | sort -nr -k 4'
+alias pscpu='ps auxf | sort -nr -k 3'
+
+# git
+alias addup='git add -u'
+alias addall='git add .'
+alias branch='git branch'
+alias checkout='git checkout'
+alias clone='git clone'
+alias commit='git commit -m'
+alias fetch='git fetch'
+alias pull='git pull origin'
+alias push='git push origin'
+alias stat='git status'  # 'status' is protected name so using 'stat' instead
+alias tag='git tag'
+alias newtag='git tag -a'
+
+# get error messages from journalctl
+alias jctl="journalctl -p 3 -xb"
+
+# pyenv aliases where pipx is useless
+alias shy="$PYENV_ROOT/versions/shy/bin/shy"
+
+### other aliases
+alias dr="dragon-drop -x -i -T"   # drag files out to GUI apps
+alias cat="bat --plain"
+alias ls="exa"
+alias yay="paru"
+
+# AUR security wrapper.
+# `paru -S PKG` — pre-checks known packages before running paru.
+# `paru TERM`  — skips pre-check (can't know selection yet);
+#                ~/.config/paru/paru.conf FileManager checks each selected package post-selection.
+function paru() {
+    local -a args=("$@")
+    local first="${args[0]:-}"
+
+    # Pass through non-install operations directly
+    case "$first" in
+        -Q*|--query|-R*|--remove|-D*|--database|-F*|--files|-h|--help|-V|--version|\
+        -Ss*|-Si*|-Sl*|-Sc*|-Scc*|-Syu*|-Syuu*)
+            command paru "${args[@]}"
+            return
+            ;;
+    esac
+
+    # Only pre-check when -S is explicit (packages are known upfront)
+    # Bare `paru TERM` skips this: FileManager handles post-selection per-package check
+    local has_s_flag=false
+    for a in "${args[@]}"; do
+        [[ "$a" == -S || "$a" == -S[^sScQuyi]* ]] && has_s_flag=true
+    done
+
+    if $has_s_flag && [[ -z "${PARANOID_BYPASS:-}" ]]; then
+        local pkgs=()
+        for a in "${args[@]}"; do
+            [[ "$a" != -* ]] && pkgs+=("$a")
+        done
+        if [[ ${#pkgs[@]} -gt 0 ]]; then
+            echo "paranoid: pre-checking: ${pkgs[*]}"
+            if ! python3 $HOME/proj/code/questions/aur_check/aur_check.py "${pkgs[@]}"; then
+                echo ""
+                echo "══ paranoid: BLOCKED ══════════════════════════════"
+                echo "   bypass: PARANOID_BYPASS=1 paru ${args[*]}"
+                echo "══════════════════════════════════════════════════"
+                return 1
+            fi
+        fi
+    fi
+
+    command paru "${args[@]}"
+}
+alias cl="clear"
+alias du="dust"
+alias vim="nvim"
+alias :q="cd ~/ && pyenv deactivate ; clear && source ~/.zshrc"
+alias :w="nvim"
+alias full_upgrade="topgrade -y && git_stuff_update"
+alias this="xdg-open"
+
+alias b="buku --suggest"
+
+
+### pothome: programs with a hard-coded $HOME run with a private one of their own
+alias rnsd="pothome reticulum rnsd"
+alias rnstatus="pothome reticulum rnstatus"
+alias nomadnet="pothome reticulum nomadnet"
+alias meshchat="pothome reticulum meshchat"
+alias i2pd="pothome i2pd i2pd"
+alias ooniprobe="pothome ooniprobe ooniprobe"
+alias nvidia-settings='nvidia-settings --config="$XDG_CONFIG_HOME/nvidia-settings-rc"'
+alias lmms='lmms --config "$XDG_CONFIG_HOME/lmms/lmmsrc.xml"'
+
+alias claude-glm='claude --settings ~/.config/claude/glm-settings.json'

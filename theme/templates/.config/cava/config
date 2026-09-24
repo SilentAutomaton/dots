@@ -1,0 +1,21 @@
+[general]
+framerate = 60
+autosens = 1
+bar_width = 2
+bar_spacing = 1
+
+[input]
+method = pipewire
+
+[output]
+method = noncurses
+
+[color]
+background = default
+gradient = 1
+gradient_color_1 = '#${secondary}'
+gradient_color_2 = '#${primary}'
+gradient_color_3 = '#${tertiary}'
+
+[smoothing]
+noise_reduction = 77

@@ -1,0 +1,29 @@
+### XDG locations
+# Single source of truth, shared with ~/.config/environment.d/10-xdg.conf
+# (plain KEY=VALUE, so systemd and the shell both read the same file).
+set -a; . "$HOME/.config/environment.d/10-xdg.conf"; set +a
+
+### PATH
+export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/apps:$PATH"
+export PATH="$HOME/scree/apps:$PATH"
+export PATH="$HOME/proj/code/usefull_scripts/bin:$PATH"
+export PATH="$HOME/scree/vfio:$PATH"
+export PATH="$HOME/scree/fu_fixes:$PATH"
+export PATH="$CARGO_HOME/bin:$PATH"
+export PATH="$GOPATH/bin:$PATH"
+export PATH="$PATH:/usr/bin/vendor_perl"   # exiftool, used by yazi exifaudio preview
+
+### PYENV init
+command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init - --no-rehash zsh)"
+export VIRTUAL_ENV_DISABLE_PROMPT=1
+
+### sudo askpass
+export SUDO_ASKPASS=/usr/local/bin/claude-askpass
+
+### ssh-agent via gpg-agent
+export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket 2>/dev/null)"
+
+### Machine-local secrets, never committed
+[[ -r "$HOME/.sh/env.local" ]] && . "$HOME/.sh/env.local"

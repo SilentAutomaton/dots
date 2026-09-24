@@ -1,0 +1,134 @@
+#:schema https://yazi-rs.github.io/schemas/theme.json
+# Filenames stay grey on purpose: the file type is carried by the coloured icon.
+
+[mgr]
+cwd = { fg = "#${on_surface_variant}" }
+
+hovered         = { fg = "#${on_primary}", bg = "#${primary}" }
+preview_hovered = { underline = true }
+
+find_keyword  = { fg = "#${on_primary}", bg = "#${on_surface_variant}", bold = true }
+find_position = { fg = "#${primary}", bg = "reset", bold = true }
+
+marker_copied   = { fg = "#${success}", bg = "#${success}" }
+marker_cut      = { fg = "#${error}", bg = "#${error}" }
+marker_marked   = { fg = "#${primary}", bg = "#${primary}" }
+marker_selected = { fg = "#${on_surface}", bg = "#${on_surface}" }
+
+count_copied   = { fg = "#${on_primary}", bg = "#${success}" }
+count_cut      = { fg = "#${on_primary}", bg = "#${error}" }
+count_selected = { fg = "#${on_primary}", bg = "#${on_surface}" }
+
+border_symbol = "│"
+border_style  = { fg = "#${surface_container}" }
+
+[tabs]
+active   = { fg = "#${on_primary}", bg = "#${primary}", bold = true }
+inactive = { fg = "#${outline}", bg = "#${surface_container_low}" }
+
+[mode]
+normal_main = { fg = "#${on_primary}", bg = "#${primary}", bold = true }
+normal_alt  = { fg = "#${primary}", bg = "#${surface_container}" }
+select_main = { fg = "#${on_primary}", bg = "#${on_surface}", bold = true }
+select_alt  = { fg = "#${on_surface}", bg = "#${surface_container}" }
+unset_main  = { fg = "#${on_primary}", bg = "#${outline}", bold = true }
+unset_alt   = { fg = "#${outline}", bg = "#${surface_container}" }
+
+[status]
+overall   = { fg = "#${outline}" }
+sep_left  = { open = "", close = "" }
+sep_right = { open = "", close = "" }
+progress_label  = { fg = "#${on_surface}", bold = true }
+progress_normal = { fg = "#${primary}", bg = "#${surface_container}" }
+progress_error  = { fg = "#${error}", bg = "#${surface_container}" }
+
+[which]
+mask            = { bg = "#${surface_dim}" }
+cand            = { fg = "#${primary}" }
+rest            = { fg = "#${term8}" }
+desc            = { fg = "#${on_surface_variant}" }
+separator       = "  "
+separator_style = { fg = "#${surface_container_highest}" }
+
+[confirm]
+border     = { fg = "#${primary}" }
+title      = { fg = "#${primary}" }
+content    = { fg = "#${on_surface}" }
+list       = { fg = "#${on_surface_variant}" }
+btn_yes    = { fg = "#${on_primary}", bg = "#${primary}", bold = true }
+btn_no     = { fg = "#${on_surface_variant}" }
+btn_labels = [ "  Yes  ", "  (N)o  " ]
+
+[spot]
+border  = { fg = "#${primary}" }
+title   = { fg = "#${primary}" }
+tbl_col = { fg = "#${on_surface}", bold = true }
+tbl_cell = { fg = "#${on_primary}", bg = "#${primary}" }
+
+[notify]
+title_info  = { fg = "#${on_surface_variant}" }
+title_warn  = { fg = "#${term3}" }
+title_error = { fg = "#${error}" }
+
+[pick]
+border   = { fg = "#${primary}" }
+active   = { fg = "#${primary}", bold = true }
+inactive = { fg = "#${outline}" }
+
+[input]
+border   = { fg = "#${primary}" }
+title    = { fg = "#${on_surface_variant}" }
+value    = { fg = "#${on_surface}" }
+selected = { bg = "#${surface_container_high}" }
+
+[cmp]
+border   = { fg = "#${primary}" }
+active   = { fg = "#${on_primary}", bg = "#${primary}" }
+inactive = { fg = "#${outline}" }
+
+[tasks]
+border  = { fg = "#${primary}" }
+title   = { fg = "#${on_surface_variant}" }
+hovered = { fg = "#${on_surface}", underline = true }
+
+[help]
+on      = { fg = "#${primary}" }
+run     = { fg = "#${on_surface_variant}" }
+desc    = { fg = "#${outline}" }
+hovered = { bg = "#${surface_container}", bold = true }
+footer  = { fg = "#${on_primary}", bg = "#${on_surface_variant}" }
+
+[filetype]
+rules = [
+  { mime = "image/*",                fg = "#${on_surface}" },
+  { mime = "{audio,video}/*",        fg = "#${on_surface_variant}" },
+  { mime = "application/{zip,gzip,x-tar,x-bzip*,x-7z-compressed,x-rar,xz,zstd}", fg = "#${on_surface_variant}" },
+  { url = "*.lnk",                  fg = "#${term8}" },
+  { url = "*/",                     fg = "#${on_surface}", bold = true },
+  { url = "*",                      fg = "#${outline}" },
+]
+
+[icon]
+prepend_dirs = [
+  { name = "proj",        text = "󰲂", fg = "#${primary}" },
+  { name = "pix",         text = "󰉏", fg = "#${term5}" },
+  { name = "scree",       text = "", fg = "#${term2}" },
+  { name = ".config",     text = "", fg = "#${term6}" },
+]
+prepend_files = [
+  { name = "PKGBUILD",       text = "", fg = "#1793d1" },
+  { name = ".zshrc",         text = "", fg = "#${term2}" },
+  { name = ".zshenv",        text = "", fg = "#${term2}" },
+  { name = "hyprland.conf",  text = "", fg = "#${term6}" },
+  { name = "tmux.conf",      text = "", fg = "#${term2}" },
+  { name = "kitty.conf",     text = "󰄛", fg = "#${term3}" },
+  { name = "flake.nix",      text = "", fg = "#${primary}" },
+]
+prepend_exts = [
+  { name = "yazi",  text = "", fg = "#${primary}" },
+  { name = "hypr",  text = "", fg = "#${term6}" },
+  { name = "kdl",   text = "", fg = "#${term2}" },
+]
+prepend_conds = [
+  { if = "dir & hovered", text = "", fg = "#${primary}" },
+]

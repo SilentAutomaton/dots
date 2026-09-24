@@ -1,0 +1,229 @@
+pragma Singleton
+
+import qs.modules.common
+import qs.modules.common.models
+import qs.modules.common.functions
+import QtQuick
+import Quickshell
+import Quickshell.Io
+import Quickshell.Hyprland
+
+Singleton {
+    id: root
+
+    property string query: ""
+
+    function ensurePrefix(prefix) {
+        if ([Config.options.search.prefix.action, Config.options.search.prefix.app, Config.options.search.prefix.clipboard, Config.options.search.prefix.math, Config.options.search.prefix.shellCommand,].some(i => root.query.startsWith(i))) {
+            root.query = prefix + root.query.slice(1);
+        } else {
+            root.query = prefix + root.query;
+        }
+    }
+
+    // https://specifications.freedesktop.org/menu/latest/category-registry.html
+    property list<string> mainRegisteredCategories: ["AudioVideo", "Development", "Education", "Game", "Graphics", "Network", "Office", "Science", "Settings", "System", "Utility"]
+    property list<string> appCategories: DesktopEntries.applications.values.reduce((acc, entry) => {
+        for (const category of entry.categories) {
+            if (!acc.includes(category) && mainRegisteredCategories.includes(category)) {
+                acc.push(category);
+            }
+        }
+        return acc;
+    }, []).sort()
+
+    property var searchActions: [
+        {
+            action: "theme",
+            execute: args => {
+                Quickshell.execDetached([`${Directories.themeDir}/apply`, ...(args != '' ? [args] : [])]);
+            }
+        },
+        {
+            action: "wallpaper",
+            execute: () => {
+                Hyprland.dispatch(`hl.dsp.global("quickshell:wallpaperSelectorToggle")`)
+            }
+        },
+        {
+            action: "wipeclipboard",
+            execute: () => {
+                Cliphist.wipe();
+            }
+        },
+    ]
+
+    property string mathResult: ""
+
+    Timer {
+        id: nonAppResultsTimer
+        interval: Config.options.search.nonAppResultDelay
+        onTriggered: {
+            let expr = root.query;
+            if (expr.startsWith(Config.options.search.prefix.math)) {
+                expr = expr.slice(Config.options.search.prefix.math.length);
+            }
+            mathProc.calculateExpression(expr);
+        }
+    }
+
+    Process {
+        id: mathProc
+        property list<string> baseCommand: ["qalc", "-t"]
+        function calculateExpression(expression) {
+            mathProc.running = false;
+            mathProc.command = baseCommand.concat(expression);
+            mathProc.running = true;
+        }
+        stdout: SplitParser {
+            onRead: data => {
+                root.mathResult = data;
+            }
+        }
+    }
+
+    property list<var> results: {
+        if (root.query == "")
+            return [];
+
+        if (root.query.startsWith(Config.options.search.prefix.clipboard)) {
+            const searchString = StringUtils.cleanPrefix(root.query, Config.options.search.prefix.clipboard);
+            return Cliphist.fuzzyQuery(searchString).map(entry => {
+                const type = `#${entry.match(/^\s*(\S+)/)?.[1] || ""}`;
+                return resultComp.createObject(null, {
+                    rawValue: entry,
+                    name: StringUtils.cleanCliphistEntry(entry),
+                    verb: "",
+                    type: type,
+                    execute: () => {
+                        Cliphist.copy(entry);
+                    },
+                    actions: [resultComp.createObject(null, {
+                            name: "Copy",
+                            iconName: "content_copy",
+                            iconType: LauncherSearchResult.IconType.Material,
+                            execute: () => {
+                                Cliphist.copy(entry);
+                            }
+                        }), resultComp.createObject(null, {
+                            name: "Delete",
+                            iconName: "delete",
+                            iconType: LauncherSearchResult.IconType.Material,
+                            execute: () => {
+                                Cliphist.deleteEntry(entry);
+                            }
+                        })]
+                });
+            }).filter(Boolean);
+        }
+
+        nonAppResultsTimer.restart();
+        const mathResultObject = resultComp.createObject(null, {
+            name: root.mathResult,
+            verb: "Copy",
+            type: "Math result",
+            fontType: LauncherSearchResult.FontType.Monospace,
+            iconName: 'calculate',
+            iconType: LauncherSearchResult.IconType.Material,
+            execute: () => {
+                Quickshell.clipboardText = root.mathResult;
+            }
+        });
+        const appResultObjects = AppSearch.fuzzyQuery(StringUtils.cleanPrefix(root.query, Config.options.search.prefix.app)).map(entry => {
+            return resultComp.createObject(null, {
+                type: "App",
+                id: entry.id,
+                name: entry.name,
+                iconName: entry.icon,
+                iconType: LauncherSearchResult.IconType.System,
+                verb: "Open",
+                execute: () => {
+                    if (!entry.runInTerminal)
+                        entry.execute();
+                    else {
+                        // Probably needs more proper escaping, but this will do for now
+                        Quickshell.execDetached(["bash", '-c', `${Config.options.apps.terminal} -e '${StringUtils.shellSingleQuoteEscape(entry.command.join(' '))}'`]);
+                    }
+                },
+                comment: entry.comment,
+                runInTerminal: entry.runInTerminal,
+                genericName: entry.genericName,
+                keywords: entry.keywords,
+                actions: entry.actions.map(action => {
+                    return resultComp.createObject(null, {
+                        name: action.name,
+                        iconName: action.icon,
+                        iconType: LauncherSearchResult.IconType.System,
+                        execute: () => {
+                            if (!action.runInTerminal)
+                                action.execute();
+                            else {
+                                Quickshell.execDetached(["bash", '-c', `${Config.options.apps.terminal} -e '${StringUtils.shellSingleQuoteEscape(action.command.join(' '))}'`]);
+                            }
+                        }
+                    });
+                })
+            });
+        });
+        const commandResultObject = resultComp.createObject(null, {
+            name: StringUtils.cleanPrefix(root.query, Config.options.search.prefix.shellCommand).replace("file://", ""),
+            verb: "Run",
+            type: "Command",
+            fontType: LauncherSearchResult.FontType.Monospace,
+            iconName: 'terminal',
+            iconType: LauncherSearchResult.IconType.Material,
+            execute: () => {
+                let cleanedCommand = root.query.replace("file://", "");
+                cleanedCommand = StringUtils.cleanPrefix(cleanedCommand, Config.options.search.prefix.shellCommand);
+                if (cleanedCommand.startsWith(Config.options.search.prefix.shellCommand)) {
+                    cleanedCommand = cleanedCommand.slice(Config.options.search.prefix.shellCommand.length);
+                }
+                Quickshell.execDetached(["bash", "-c", root.query.startsWith('sudo') ? `${Config.options.apps.terminal} zsh -c '${StringUtils.shellSingleQuoteEscape(cleanedCommand)}; exec zsh'` : cleanedCommand]);
+            }
+        });
+        const launcherActionObjects = root.searchActions.map(action => {
+            const actionString = `${Config.options.search.prefix.action}${action.action}`;
+            if (actionString.startsWith(root.query) || root.query.startsWith(actionString)) {
+                return resultComp.createObject(null, {
+                    name: root.query.startsWith(actionString) ? root.query : actionString,
+                    verb: "Run",
+                    type: "Action",
+                    iconName: 'settings_suggest',
+                    iconType: LauncherSearchResult.IconType.Material,
+                    execute: () => {
+                        action.execute(root.query.split(" ").slice(1).join(" "));
+                    }
+                });
+            }
+            return null;
+        }).filter(Boolean);
+
+        let result = [];
+        const startsWithNumber = /^\d/.test(root.query);
+        const startsWithMathPrefix = root.query.startsWith(Config.options.search.prefix.math);
+        const startsWithShellCommandPrefix = root.query.startsWith(Config.options.search.prefix.shellCommand);
+        if (startsWithNumber || startsWithMathPrefix) {
+            result.push(mathResultObject);
+        } else if (startsWithShellCommandPrefix) {
+            result.push(commandResultObject);
+        }
+
+        result = result.concat(appResultObjects);
+
+        result = result.concat(launcherActionObjects);
+
+        if (Config.options.search.prefix.showDefaultActionsWithoutPrefix) {
+            if (!startsWithShellCommandPrefix)
+                result.push(commandResultObject);
+            if (!startsWithNumber && !startsWithMathPrefix)
+                result.push(mathResultObject);
+        }
+
+        return result;
+    }
+
+    Component {
+        id: resultComp
+        LauncherSearchResult {}
+    }
+}

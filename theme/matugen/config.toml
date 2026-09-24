@@ -1,0 +1,6 @@
+[config]
+version_check = false
+
+[templates.palette]
+input_path = "palette.sh"
+output_path = "../palettes/wallpaper.sh"

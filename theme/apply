@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# Renders every template with one palette and reloads what can reload live.
+# Usage: apply [palette]   (default: the last applied one, else tomorrow-night)
+set -euo pipefail
+
+here=$(dirname "$(realpath "$0")")
+state=${XDG_STATE_HOME:-$HOME/.local/state}/theme
+mkdir -p "$state"
+
+name=${1:-$(cat "$state/name" 2>/dev/null || echo tomorrow-night)}
+[[ -r $here/palettes/$name.sh ]] || { echo "No palette '$name' in $here/palettes." >&2; exit 1; }
+
+# The default palette goes first: a generated palette only overrides the roles
+# matugen knows, and the terminal and success colours stay.
+. "$here/palettes/tomorrow-night.sh"
+. "$here/palettes/$name.sh"
+
+roles=$(sed -n 's/^export \([a-z0-9_]*\)=.*/\1/p' "$here/palettes/tomorrow-night.sh")
+vars=""
+for role in $roles; do
+    hex=${!role}
+    export "${role}_rgb=$((16#${hex:0:2})),$((16#${hex:2:2})),$((16#${hex:4:2}))"
+    vars+="\$$role \$${role}_rgb "
+done
+
+cd "$here/templates"
+find . -type f | while read -r template; do
+    target=$HOME/${template#./}
+    mkdir -p "$(dirname "$target")"
+    envsubst "$vars" < "$template" > "$target"
+done
+echo "$name" > "$state/name"
+
+# KDE apps also write kdeglobals, so only its colour groups are replaced.
+kde=${XDG_CONFIG_HOME:-$HOME/.config}/kdeglobals
+touch "$kde"
+awk 'FNR == NR { if (/^\[/) drop[$0] = 1; next }
+     /^\[/ { skip = ($0 in drop) }
+     !skip' "$state/kdeglobals" "$kde" > "$kde.new"
+cat "$state/kdeglobals" >> "$kde.new"
+mv "$kde.new" "$kde"
+
+[[ -n ${HYPRLAND_INSTANCE_SIGNATURE:-} ]] && hyprctl reload >/dev/null
+pkill -USR1 -x kitty || true
+tmux source-file "$HOME/.config/tmux/tmux.conf" 2>/dev/null || true
+pkill -USR2 -x cava || true

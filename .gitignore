@@ -1,0 +1,18 @@
+# Rendered by theme/apply from theme/templates
+/yazi/theme.toml
+/btop/themes/
+/gtk-3.0/colors.css
+/gtk-4.0/colors.css
+/wlogout/style.css
+/theme/palettes/wallpaper.sh
+
+# Installed by their plugin managers
+/tmux/plugins/
+/yazi/plugins/
+/yazi/flavors/
+
+# Machine-local
+/zsh/.sh/env.local
+/gtk-3.0/bookmarks
+/gtk-4.0/servers
+/btop/btop.log

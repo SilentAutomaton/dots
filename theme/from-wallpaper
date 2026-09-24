@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Builds palettes/wallpaper.sh from an image with matugen, then applies it.
+# Usage: from-wallpaper <image> [scheme-tonal-spot|scheme-monochrome|...]
+set -euo pipefail
+
+here=$(dirname "$(realpath "$0")")
+image=$(realpath "$1")
+scheme=${2:-scheme-tonal-spot}
+
+matugen image "$image" --config "$here/matugen/config.toml" \
+    --mode dark --type "$scheme" --source-color-index 0 >/dev/null
+"$here/apply" wallpaper

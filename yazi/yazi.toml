@@ -1,0 +1,69 @@
+#:schema https://yazi-rs.github.io/schemas/yazi.json
+
+[mgr]
+ratio          = [ 1, 3, 4 ]      # wide preview pane, inline images have room
+sort_by        = "alphabetical"
+sort_sensitive = false
+sort_dir_first = true
+linemode       = "size"
+show_hidden    = false
+show_symlink   = true
+scrolloff      = 5
+mouse_events   = [ "click", "scroll", "touch", "move", "drag" ]
+
+[preview]
+wrap          = "no"
+tab_size      = 2
+max_width     = 1200
+max_height    = 1800
+image_filter  = "lanczos3"
+image_quality = 90
+image_delay   = 30
+
+[opener]
+edit = [
+  { run = '${EDITOR:-nvim} %s', desc = "$EDITOR", block = true, for = "unix" },
+]
+open = [
+  { run = 'xdg-open %s', desc = "Open", orphan = true, for = "linux" },
+]
+reveal = [
+  { run = 'nautilus %d1', desc = "Reveal in Nautilus", orphan = true, for = "linux" },
+]
+
+[open]
+prepend_rules = [
+  { url = "*/", use = [ "edit", "open", "reveal" ] },
+]
+
+[plugin]
+prepend_fetchers = [
+  { id = "mime", url = "local://*",  run = "mime-ext.local",  prio = "high", group = "mime" },
+  { id = "mime", url = "remote://*", run = "mime-ext.remote", prio = "high", group = "mime" },
+]
+
+prepend_preloaders = [
+  { url = "*.{csv,tsv,json,parquet,xlsx,db,duckdb}", run = "duckdb", multi = false },
+  { mime = "font/*",                    run = "font-sample" },
+  { mime = "application/ms-opentype",   run = "font-sample" },
+  { url = "*.{otf,ttf,woff,woff2}",    run = "font-sample" },
+]
+
+prepend_previewers = [
+  { url = "*/", run = "folder", sync = true },
+  { url = "*.md", run = 'piper -- CLICOLOR_FORCE=1 glow -w=$w -s="$HOME/.local/state/theme/glow.json" "$1"' },
+  { url = "*.{csv,tsv,json,parquet,xlsx,db,duckdb}", run = "duckdb" },
+  { mime = "application/{*zip,tar,bzip2,7z*,rar,xz,zstd,java-archive}", run = "ouch" },
+  { mime = "audio/*",                                run = "exifaudio" },
+  { mime = "font/*",                                 run = "font-sample" },
+  { mime = "application/ms-opentype",                run = "font-sample" },
+  { url = "*.{otf,ttf,woff,woff2}",                 run = "font-sample" },
+  { mime = "text/*", run = 'piper -- bat -p --color=always --paging=never --line-range :500 "$1"' },
+  # Narrow on purpose: a `mime = "*"` catch-all here would shadow the built-in
+  # image, video, pdf and archive previewers, which are prepended-over.
+  { mime = "application/{octet-stream,x-executable,x-sharedlib,x-pie-executable}", run = 'piper -- hexyl --border=none --terminal-width=$w "$1"' },
+]
+
+[tasks]
+image_alloc = 1073741824
+image_bound = [ 0, 0 ]

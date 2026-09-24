@@ -1,0 +1,6 @@
+# Colours come from the palette: theme/apply renders the style file.
+style: "~/.local/state/theme/glow.json"
+mouse: false
+pager: false
+width: 80
+all: false
