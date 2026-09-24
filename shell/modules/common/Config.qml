@@ -117,6 +117,8 @@ Singleton {
             }
 
             property JsonObject background: JsonObject {
+                property string mode: "image" // "image" or "matrix"
+                property string matrixCommand: "matrix-news-viewer"
                 property string wallpaperPath: FileUtils.trimFileProtocol(`${Directories.pictures}/wallpapers/stairs-8062145_1920.jpg`)
                 property bool hideWhenFullscreen: true
                 property JsonObject parallax: JsonObject {

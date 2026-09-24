@@ -128,6 +128,14 @@ matugen and applies it. `apply tomorrow-night` goes back.
 
 The settings app (Super+I) and the launcher action `/theme <name>` do the same.
 
+## Matrix wallpaper
+
+Settings (Super+I), Appearance, Wallpaper: "Matrix news" runs
+matrix-news-viewer in place of the image. Install it
+with `cargo install --path . --root ~/.local`. "Refresh news" runs
+`newsboat -x reload`; nothing else goes to the network. With `preset = "theme"`
+in its config the rain takes the palette colours from `theme.toml`.
+
 ## Keys
 
 | Keys | Action |

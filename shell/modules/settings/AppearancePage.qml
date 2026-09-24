@@ -4,6 +4,7 @@ import Qt5Compat.GraphicalEffects
 import Qt.labs.folderlistmodel
 import Quickshell
 import Quickshell.Io
+import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
 import qs.modules.common.functions
@@ -70,6 +71,23 @@ SettingsPage {
     SettingsSection {
         icon: "wallpaper"
         title: "Wallpaper"
+
+        ConfigSelectionArray {
+            currentValue: Config.options.background.mode
+            onSelected: mode => Config.options.background.mode = mode
+            options: [
+                { "displayName": "Image", "value": "image" },
+                { "displayName": "Matrix news", "value": "matrix" }
+            ]
+        }
+        RippleButtonWithIcon {
+            Layout.leftMargin: 8
+            visible: MatrixWallpaper.active
+            enabled: !MatrixWallpaper.refreshing
+            materialIcon: "sync"
+            mainText: MatrixWallpaper.refreshing ? "Fetching news…" : "Refresh news"
+            onClicked: MatrixWallpaper.refreshNews()
+        }
 
         RowLayout {
             Layout.fillWidth: true

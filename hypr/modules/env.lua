@@ -7,6 +7,7 @@ hl.env("QT_QPA_PLATFORM", "wayland;xcb")
 hl.env("QT_QPA_PLATFORMTHEME", "kde")
 hl.env("XDG_MENU_PREFIX", "plasma-")
 hl.env("TERMINAL", "kitty -1")
+hl.env("PATH", home .. "/.local/bin:" .. os.getenv("PATH"))
 
 -- Intel UHD 630: hardware video decoding in Firefox-based browsers.
 hl.env("LIBVA_DRIVER_NAME", "iHD")
