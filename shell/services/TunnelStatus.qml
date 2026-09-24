@@ -85,8 +85,8 @@ Singleton {
         onTriggered: handshakeProc.running = true
     }
 
-    // The country comes from the local GeoIP database, so only the IP lookup
-    // leaves the machine, and it leaves through the tunnel being checked.
+    // Runs only on a click. The country comes from the local GeoIP database, so
+    // only the IP lookup leaves the machine, through the tunnel being checked.
     Process {
         id: exitProc
         command: ["bash", "-c", 'ip=$(curl -s --max-time 5 ifconfig.me) && echo "$ip" && geoiplookup "$ip" | sed "s/^[^:]*: //"']

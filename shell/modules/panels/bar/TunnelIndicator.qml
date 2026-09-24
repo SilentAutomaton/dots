@@ -9,6 +9,7 @@ MouseArea {
     implicitWidth: 26
     implicitHeight: 26
     hoverEnabled: true
+    // Only a click sends the address lookup out; hovering stays offline.
     onClicked: TunnelStatus.refreshExit()
 
     function ageText(seconds) {
@@ -29,7 +30,6 @@ MouseArea {
     StyledPopup {
         id: popup
         hoverTarget: root
-        onActiveChanged: if (active && TunnelStatus.exitIp === "") TunnelStatus.refreshExit()
 
         Column {
             anchors.centerIn: parent
@@ -61,7 +61,7 @@ MouseArea {
                     icon: "language"
                     label: "Exit:"
                     value: TunnelStatus.exitLoading ? "checking…"
-                        : TunnelStatus.exitIp === "" ? "unknown, click to check"
+                        : TunnelStatus.exitIp === "" ? "click the icon to check"
                         : `${TunnelStatus.exitIp}, ${TunnelStatus.exitCountry}`
                 }
             }
