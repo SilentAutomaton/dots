@@ -94,22 +94,25 @@ Three things make that work:
 ```
 sudo -A install -m 644 system/udev/80-nvidia-pm.rules system/udev/81-dri-names.rules /etc/udev/rules.d/
 sudo -A install -m 644 system/modprobe.d/nvidia.conf /etc/modprobe.d/
+sudo -A install -m 755 system/bin/start-hyprland-igpu /usr/local/bin/
+sudo -A install -D -m 644 system/wayland-sessions/hyprland-igpu.desktop /usr/local/share/wayland-sessions/hyprland-igpu.desktop
 sudo -A udevadm control --reload && sudo -A udevadm trigger -s drm -s pci
 ```
 
 - `80-nvidia-pm.rules` sets `power/control=auto` when the driver binds and
   `on` when it unbinds, so handing the card to vfio-pci still works.
 - `81-dri-names.rules` names the Intel card `/dev/dri/intel-igpu`, and
-  `zsh/environment.d/20-gpu.conf` gives Hyprland only that card. It also starts
-  Hyprland with Mesa's EGL only, because NVIDIA's EGL driver opens the card as
-  soon as it loads; `hypr/modules/env.lua` gives launched programs both drivers
-  back, so `prime-run` still works. Otherwise Hyprland holds
+  the "Hyprland (Intel only)" session in GDM runs `start-hyprland-igpu`, which
+  gives Hyprland only that card and Mesa's EGL only: NVIDIA's EGL driver opens
+  the card as soon as it loads. `hypr/modules/env.lua` gives launched programs
+  both drivers back, so `prime-run` still works. GDM does not pass these
+  variables from environment.d, hence the wrapper. Otherwise Hyprland holds
   the NVIDIA card open and it never sleeps.
 - Suspend uses the kernel notifiers `nvidia-utils` turns on; the
   nvidia-suspend/resume services stay disabled.
 
 Costs: HDMI and DP-3 are wired to NVIDIA and stay dark while Hyprland runs
-on Intel only (delete `~/.config/environment.d/20-gpu.conf` and log in again to use them).
+on Intel only (pick the plain "Hyprland" session in GDM to use them).
 Waking the card takes a fraction of a second, and a card in D3cold may refuse
 to come back for a second VFIO start: set `power/control` to `on` before
 passthrough.

@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Hyprland (Intel only)
+Comment=Hyprland on the Intel card; the NVIDIA card sleeps until prime-run wakes it
+Exec=/usr/local/bin/start-hyprland-igpu
+Type=Application
+DesktopNames=Hyprland
