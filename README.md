@@ -100,7 +100,10 @@ sudo -A udevadm control --reload && sudo -A udevadm trigger -s drm -s pci
 - `80-nvidia-pm.rules` sets `power/control=auto` when the driver binds and
   `on` when it unbinds, so handing the card to vfio-pci still works.
 - `81-dri-names.rules` names the Intel card `/dev/dri/intel-igpu`, and
-  `zsh/environment.d/20-gpu.conf` gives Hyprland only that card. Otherwise Hyprland holds
+  `zsh/environment.d/20-gpu.conf` gives Hyprland only that card. It also starts
+  Hyprland with Mesa's EGL only, because NVIDIA's EGL driver opens the card as
+  soon as it loads; `hypr/modules/env.lua` gives launched programs both drivers
+  back, so `prime-run` still works. Otherwise Hyprland holds
   the NVIDIA card open and it never sleeps.
 - Suspend uses the kernel notifiers `nvidia-utils` turns on; the
   nvidia-suspend/resume services stay disabled.
