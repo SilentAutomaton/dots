@@ -101,8 +101,9 @@ Singleton {
         }
 	}
 
-    // Asking nvidia-smi wakes a suspended card and keeps it drawing power, so a
-    // sleeping card is reported idle from sysfs alone.
+    // nvidia-smi opens the card, and an open card cannot suspend: asked on every
+    // tick, it alone would keep the card awake. So it is asked only while some
+    // program already has the card open; otherwise the card reads as idle.
     function updateGpu() {
         if (root.gpuDevice === "") return;
         fileGpuPower.reload();
@@ -132,11 +133,15 @@ Singleton {
 
     Process {
         id: gpuQueryProc
-        command: ["nvidia-smi", "--query-gpu=utilization.gpu,memory.used,memory.total", "--format=csv,noheader,nounits"]
+        command: ["bash", "-c", "fuser -s /dev/nvidia0 && nvidia-smi --query-gpu=utilization.gpu,memory.used,memory.total --format=csv,noheader,nounits"]
         stdout: StdioCollector {
             onStreamFinished: {
                 const [usage, used, total] = text.trim().split(",").map(Number);
-                if (isNaN(usage)) return;
+                if (isNaN(usage)) {
+                    root.gpuUsage = 0;
+                    root.gpuMemoryUsed = 0;
+                    return;
+                }
                 root.gpuUsage = usage / 100;
                 root.gpuMemoryUsed = used;
                 root.gpuMemoryTotal = total;
