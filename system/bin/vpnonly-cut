@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Closes the established TCP connections of the agents the kill switch blocks.
+# OpenSnitch only judges the first packet of a TCP connection, so arming the
+# kill switch alone leaves the connections an agent already holds open.
+# Runs as root from sudoers; which processes count comes only from the
+# root-owned kill switch rules.
+set -euo pipefail
+
+rules=/etc/opensnitchd/killswitch
+agent_paths=$(jq -r '.operator.data' "$rules/000-ab-killswitch-deny.json")
+gemini_command=$(jq -r '.operator.list[] | select(.operand == "process.command") | .data' \
+    "$rules/000-ac-killswitch-deny-gemini.json")
+
+is_agent() {  # is_agent <pid>
+    local path
+    path=$(readlink "/proc/$1/exe" 2>/dev/null) || return 1
+    [[ $path =~ $agent_paths ]] && return 0
+    [[ $path == /usr/bin/node ]] && tr '\0' ' ' < "/proc/$1/cmdline" | grep -qE -- "$gemini_command"
+}
+
+ss -tnpH state established | while read -r _ _ local peer users; do
+    for pid in $(grep -oE 'pid=[0-9]+' <<< "$users" | cut -d= -f2 | sort -u); do
+        is_agent "$pid" || continue
+        ss -K state established "( sport = :${local##*:} and dport = :${peer##*:} )" > /dev/null
+        break
+    done
+done

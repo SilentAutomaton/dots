@@ -148,16 +148,18 @@ Singleton {
                 property JsonObject resources: JsonObject {
                     property bool alwaysShowSwap: true
                     property bool alwaysShowCpu: true
+                    property bool alwaysShowGpu: true
                     property int memoryWarningThreshold: 95
                     property int swapWarningThreshold: 85
                     property int cpuWarningThreshold: 90
+                    property int gpuWarningThreshold: 90
                 }
                 property list<string> screenList: [] // Monitor names from `hyprctl monitors`; empty means all
                 property JsonObject utilButtons: JsonObject {
                     property bool showScreenSnip: true
                     property bool showOcr: false
                     property bool showMicToggle: true
-                    property bool showPerformanceProfileToggle: false
+                    property bool showAgentKillswitch: true
                 }
                 property JsonObject workspaces: JsonObject {
                     property bool monochromeIcons: false

@@ -1,0 +1,40 @@
+{
+  "created": "2026-09-23T00:00:00Z",
+  "updated": "2026-09-23T00:00:00Z",
+  "name": "000-vpnonly-bridge-hermes",
+  "description": "vpn_only: hermes may reach a tunnel that lives inside a container, over the docker bridge",
+  "enabled": false,
+  "precedence": true,
+  "nolog": false,
+  "action": "allow",
+  "duration": "always",
+  "operator": {
+    "type": "list",
+    "operand": "list",
+    "sensitive": false,
+    "data": "",
+    "list": [
+      {
+        "type": "regexp",
+        "operand": "process.path",
+        "sensitive": false,
+        "data": "^/home/[^/]+/\\.config/hermes/hermes-agent/\\.hermes-runtime/python/generation-[0-9a-f-]+/cpython-[0-9.]+-linux-x86_64-gnu/bin/python3\\.[0-9]+$",
+        "list": null
+      },
+      {
+        "type": "regexp",
+        "operand": "iface.out",
+        "sensitive": false,
+        "data": "^(docker0|br-[0-9a-f]+)$",
+        "list": null
+      },
+      {
+        "type": "network",
+        "operand": "dest.network",
+        "sensitive": false,
+        "data": "172.16.0.0/12",
+        "list": null
+      }
+    ]
+  }
+}

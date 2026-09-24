@@ -1,0 +1,18 @@
+{
+  "created": "2026-09-23T00:00:00Z",
+  "updated": "2026-09-23T00:00:00Z",
+  "name": "000-ab-killswitch-deny",
+  "description": "killswitch: claude, codex and hermes reach nothing but loopback",
+  "enabled": true,
+  "precedence": true,
+  "nolog": false,
+  "action": "reject",
+  "duration": "always",
+  "operator": {
+    "type": "regexp",
+    "operand": "process.path",
+    "sensitive": false,
+    "data": "^(/home/[^/]+/\\.local/share/claude/versions/[0-9a-z.]+|/usr/bin/codex|/home/[^/]+/\\.config/hermes/hermes-agent/\\.hermes-runtime/python/generation-[0-9a-f-]+/cpython-[0-9.]+-linux-x86_64-gnu/bin/python3\\.[0-9]+)$",
+    "list": null
+  }
+}

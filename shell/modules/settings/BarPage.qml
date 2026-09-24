@@ -72,10 +72,10 @@ SettingsPage {
             onCheckedChanged: Config.options.bar.utilButtons.showMicToggle = checked
         }
         ConfigSwitch {
-            buttonIcon: "speed"
-            text: "Power profile"
-            checked: Config.options.bar.utilButtons.showPerformanceProfileToggle
-            onCheckedChanged: Config.options.bar.utilButtons.showPerformanceProfileToggle = checked
+            buttonIcon: "shield_lock"
+            text: "Agent network kill switch"
+            checked: Config.options.bar.utilButtons.showAgentKillswitch
+            onCheckedChanged: Config.options.bar.utilButtons.showAgentKillswitch = checked
         }
         ConfigSwitch {
             buttonIcon: "notifications"
@@ -162,6 +162,12 @@ SettingsPage {
             text: "Always show swap"
             checked: Config.options.bar.resources.alwaysShowSwap
             onCheckedChanged: Config.options.bar.resources.alwaysShowSwap = checked
+        }
+        ConfigSwitch {
+            buttonIcon: "developer_board"
+            text: "Always show GPU"
+            checked: Config.options.bar.resources.alwaysShowGpu
+            onCheckedChanged: Config.options.bar.resources.alwaysShowGpu = checked
         }
         ConfigSpinBox {
             icon: "update"

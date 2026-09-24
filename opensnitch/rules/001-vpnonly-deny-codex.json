@@ -1,0 +1,18 @@
+{
+  "created": "2026-09-17T00:00:00Z",
+  "updated": "2026-09-17T00:00:00Z",
+  "name": "001-vpnonly-deny-codex",
+  "description": "vpn_only: codex is rejected outside a tunnel",
+  "enabled": true,
+  "precedence": true,
+  "nolog": false,
+  "action": "reject",
+  "duration": "always",
+  "operator": {
+    "type": "simple",
+    "operand": "process.path",
+    "sensitive": false,
+    "data": "/usr/bin/codex",
+    "list": null
+  }
+}

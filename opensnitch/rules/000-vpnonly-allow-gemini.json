@@ -1,0 +1,40 @@
+{
+  "created": "2026-09-17T00:00:00Z",
+  "updated": "2026-09-17T00:00:00Z",
+  "name": "000-vpnonly-allow-gemini",
+  "description": "vpn_only: gemini goes out only through a tunnel",
+  "enabled": true,
+  "precedence": true,
+  "nolog": false,
+  "action": "allow",
+  "duration": "always",
+  "operator": {
+    "type": "list",
+    "operand": "list",
+    "sensitive": false,
+    "data": "",
+    "list": [
+      {
+        "type": "simple",
+        "operand": "process.path",
+        "sensitive": false,
+        "data": "/usr/bin/node",
+        "list": null
+      },
+      {
+        "type": "regexp",
+        "operand": "process.command",
+        "sensitive": false,
+        "data": "(^|[\\s/])gemini(\\.js)?(\\s|$)|@google/gemini-cli",
+        "list": null
+      },
+      {
+        "type": "regexp",
+        "operand": "iface.out",
+        "sensitive": false,
+        "data": "^(lo|wg0|wgmc)$",
+        "list": null
+      }
+    ]
+  }
+}

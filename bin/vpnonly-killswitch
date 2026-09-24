@@ -1,0 +1,120 @@
+#!/usr/bin/env bash
+# vpn_only switchboard: the killswitch, and the list of interfaces that count as
+# "through the tunnel".
+#
+# The killswitch is armed by installing its rules and disarmed by deleting them.
+# Not by the "enabled" field: opensnitchd deletes a rule file it finds disabled,
+# so a shipped-but-off rule does not survive on disk.
+#
+# The rule files it installs are root-owned, and sudoers allows exactly the two
+# commands below without a password. A copy the user could write would let any
+# process of that user slip an allow-all rule in as root.
+set -euo pipefail
+
+STASH=/etc/opensnitchd/killswitch
+DEST=/etc/opensnitchd/rules
+KILLSWITCH=(000-aa-killswitch-lo 000-ab-killswitch-deny 000-ac-killswitch-deny-gemini)
+REFERENCE="$DEST/000-vpnonly-allow-claude.json"
+
+die() { echo "vpnonly: $*" >&2; exit 1; }
+
+killswitch_state() {
+    [ -f "$DEST/000-ab-killswitch-deny.json" ] && echo on || echo off
+}
+
+ifaces() {
+    sudo -A jq -r '.operator.list[] | select(.operand=="iface.out") | .data' "$REFERENCE" \
+        | sed -E 's/^\^\(//; s/\)\$$//' | tr '|' '\n'
+}
+
+set_ifaces() {  # set_ifaces <name> <name> ...
+    local joined file tmp
+    joined=$(printf '%s|' "$@"); joined=${joined%|}
+    tmp=$(mktemp)
+    for file in "$DEST"/000-vpnonly-allow-*.json; do
+        sudo -A jq --arg d "^($joined)\$" \
+            '(.operator.list[] | select(.operand=="iface.out") | .data) = $d' "$file" > "$tmp"
+        # Rewritten in place: replacing the file makes opensnitchd see a delete
+        # and remove the rule from disk.
+        sudo -A tee "$file" < "$tmp" > /dev/null
+    done
+    rm -f "$tmp"
+}
+
+arm_killswitch() {
+    sudo -n install -m 600 "$STASH/000-aa-killswitch-lo.json" "$STASH/000-ab-killswitch-deny.json" \
+        "$STASH/000-ac-killswitch-deny-gemini.json" "$DEST/" || die "could not arm the killswitch"
+    # The rules only stop new connections; this closes the ones already open.
+    sudo -n /usr/local/bin/vpnonly-cut || die "armed, but open connections were not closed"
+}
+
+disarm_killswitch() {
+    sudo -n rm -f "$DEST/000-aa-killswitch-lo.json" "$DEST/000-ab-killswitch-deny.json" \
+        "$DEST/000-ac-killswitch-deny-gemini.json" || die "could not disarm the killswitch"
+}
+
+show_status() {
+    echo "killswitch: $(killswitch_state)"
+    echo "through the tunnel: $(ifaces | tr '\n' ' ')"
+}
+
+case "${1:-status}" in
+status)
+    show_status
+    ;;
+state)
+    killswitch_state
+    ;;
+on)
+    arm_killswitch
+    echo "killswitch on: the agents reach loopback and nothing else"
+    ;;
+off)
+    disarm_killswitch
+    echo "killswitch off"
+    ;;
+toggle)
+    if [ "$(killswitch_state)" = on ]; then disarm_killswitch; else arm_killswitch; fi
+    killswitch_state
+    ;;
+iface)
+    case "${2:-list}" in
+    list)
+        ifaces
+        ;;
+    add)
+        [ -n "${3:-}" ] || die "iface add needs a name"
+        ifaces | grep -qx -- "$3" && die "$3 is already allowed"
+        mapfile -t current < <(ifaces)
+        set_ifaces "${current[@]}" "$3"
+        show_status
+        ;;
+    remove)
+        [ -n "${3:-}" ] || die "iface remove needs a name"
+        [ "$3" != lo ] || die "lo stays: the resolver listens on 127.0.0.1 and names would stop resolving"
+        ifaces | grep -qx -- "$3" || die "$3 is not in the list"
+        mapfile -t current < <(ifaces | grep -vx -- "$3")
+        [ ${#current[@]} -gt 1 ] || die "that would leave only lo, and the agents would lose the network"
+        set_ifaces "${current[@]}"
+        show_status
+        ;;
+    *)
+        die "iface takes list, add <name> or remove <name>"
+        ;;
+    esac
+    ;;
+*)
+    cat <<'USAGE'
+usage: vpnonly-killswitch [status|state|on|off|toggle|iface list|iface add <name>|iface remove <name>]
+
+  status              killswitch state and the interfaces that count as the tunnel
+  state               just "on" or "off"
+  on                  cut the agents off everything but loopback
+  off                 back to normal: tunnel only
+  toggle              flip it
+  iface add <name>    let a new tunnel through, in every allow rule at once
+  iface remove <name> take one out
+USAGE
+    exit 2
+    ;;
+esac

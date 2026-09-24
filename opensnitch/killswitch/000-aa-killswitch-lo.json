@@ -1,0 +1,33 @@
+{
+  "created": "2026-09-23T00:00:00Z",
+  "updated": "2026-09-23T00:00:00Z",
+  "name": "000-aa-killswitch-lo",
+  "description": "killswitch: loopback stays open, so the local model keeps answering",
+  "enabled": true,
+  "precedence": true,
+  "nolog": false,
+  "action": "allow",
+  "duration": "always",
+  "operator": {
+    "type": "list",
+    "operand": "list",
+    "sensitive": false,
+    "data": "",
+    "list": [
+      {
+        "type": "regexp",
+        "operand": "process.path",
+        "sensitive": false,
+        "data": "^(/home/[^/]+/\\.local/share/claude/versions/[0-9a-z.]+|/usr/bin/codex|/usr/bin/node|/home/[^/]+/\\.config/hermes/hermes-agent/\\.hermes-runtime/python/generation-[0-9a-f-]+/cpython-[0-9.]+-linux-x86_64-gnu/bin/python3\\.[0-9]+)$",
+        "list": null
+      },
+      {
+        "type": "regexp",
+        "operand": "iface.out",
+        "sensitive": false,
+        "data": "^lo$",
+        "list": null
+      }
+    ]
+  }
+}

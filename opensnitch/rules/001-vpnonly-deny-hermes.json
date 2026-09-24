@@ -1,0 +1,18 @@
+{
+  "created": "2026-09-23T00:00:00Z",
+  "updated": "2026-09-23T00:00:00Z",
+  "name": "001-vpnonly-deny-hermes",
+  "description": "vpn_only: hermes is rejected outside a tunnel",
+  "enabled": true,
+  "precedence": true,
+  "nolog": false,
+  "action": "reject",
+  "duration": "always",
+  "operator": {
+    "type": "regexp",
+    "operand": "process.path",
+    "sensitive": false,
+    "data": "^/home/[^/]+/\\.config/hermes/hermes-agent/\\.hermes-runtime/python/generation-[0-9a-f-]+/cpython-[0-9.]+-linux-x86_64-gnu/bin/python3\\.[0-9]+$",
+    "list": null
+  }
+}
