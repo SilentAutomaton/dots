@@ -74,6 +74,8 @@ for f in opensnitch/rules/*.json; do    # one by one, in place: see the note bel
     sudo -A tee /etc/opensnitchd/rules/${f##*/} < $f > /dev/null
     sudo -A chmod 600 /etc/opensnitchd/rules/${f##*/}
 done
+# The allow rules name the tunnels; the bar indicator reads them without root.
+sudo -A chmod 644 /etc/opensnitchd/rules/000-vpnonly-allow-*.json
 sudo -A install -m 600 opensnitch/default-config.json /etc/opensnitchd/
 sudo -A install -m 755 system/bin/vpnonly-cut /usr/local/bin/
 sudo -A install -m 440 system/sudoers.d/vpnonly-killswitch /etc/sudoers.d/
@@ -83,6 +85,31 @@ sed "s|^file=~/|file=$HOME/|" opensnitch/ui/settings.conf > ~/.config/opensnitch
 
 Never replace a rule file that already exists with `install` or `mv`: the daemon
 sees the old file deleted, and it removes the rule from disk.
+
+## NVIDIA power
+
+The RTX 2070 powers off while nothing uses it (runtime D3, fine-grained).
+Three things make that work:
+
+```
+sudo -A install -m 644 system/udev/80-nvidia-pm.rules system/udev/81-dri-names.rules /etc/udev/rules.d/
+sudo -A install -m 644 system/modprobe.d/nvidia.conf /etc/modprobe.d/
+sudo -A udevadm control --reload && sudo -A udevadm trigger -s drm -s pci
+```
+
+- `80-nvidia-pm.rules` sets `power/control=auto` when the driver binds and
+  `on` when it unbinds, so handing the card to vfio-pci still works.
+- `81-dri-names.rules` names the Intel card `/dev/dri/intel-igpu`, and
+  `hypr/modules/env.lua` gives Hyprland only that card. Otherwise Hyprland holds
+  the NVIDIA card open and it never sleeps.
+- Suspend uses the kernel notifiers `nvidia-utils` turns on; the
+  nvidia-suspend/resume services stay disabled.
+
+Costs: HDMI and DP-3 are wired to NVIDIA and stay dark while Hyprland runs
+on Intel only (remove the `AQ_DRM_DEVICES` line and log in again to use them).
+Waking the card takes a fraction of a second, and a card in D3cold may refuse
+to come back for a second VFIO start: set `power/control` to `on` before
+passthrough.
 
 ## Theme
 
