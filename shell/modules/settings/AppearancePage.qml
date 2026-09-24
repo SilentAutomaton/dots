@@ -4,7 +4,6 @@ import Qt5Compat.GraphicalEffects
 import Qt.labs.folderlistmodel
 import Quickshell
 import Quickshell.Io
-import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
 import qs.modules.common.functions
@@ -82,11 +81,15 @@ SettingsPage {
         }
         RippleButtonWithIcon {
             Layout.leftMargin: 8
-            visible: MatrixWallpaper.active
-            enabled: !MatrixWallpaper.refreshing
+            visible: Config.options.background.mode === "matrix"
+            enabled: !newsRefresh.running
             materialIcon: "sync"
-            mainText: MatrixWallpaper.refreshing ? "Fetching news…" : "Refresh news"
-            onClicked: MatrixWallpaper.refreshNews()
+            mainText: newsRefresh.running ? "Fetching news…" : "Refresh news"
+            onClicked: newsRefresh.running = true
+        }
+        Process {
+            id: newsRefresh
+            command: ["newsboat", "-x", "reload"]
         }
 
         RowLayout {

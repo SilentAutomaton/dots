@@ -8,19 +8,18 @@ import qs.modules.common
 Singleton {
     id: root
     readonly property bool active: Config.ready && Config.options.background.mode === "matrix"
-    readonly property bool refreshing: refresh.running
 
-    function refreshNews() {
-        refresh.running = true;
+    // A config file reload flips these settings for a moment; starting on every flip kills the process mid-start.
+    onActiveChanged: settle.restart()
+
+    Timer {
+        id: settle
+        interval: 500
+        onTriggered: rain.running = root.active
     }
 
     Process {
-        running: root.active
+        id: rain
         command: [Config.options.background.matrixCommand]
-    }
-
-    Process {
-        id: refresh
-        command: ["newsboat", "-x", "reload"]
     }
 }
