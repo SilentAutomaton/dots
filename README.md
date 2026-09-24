@@ -54,6 +54,36 @@ cd ~/.config/quickshell && rsync -a --relative --delete shell $d/
 cp ~/.zshrc ~/.zshenv $d/zsh/ && rsync -a --exclude env.local ~/.sh/ $d/zsh/.sh/
 ```
 
+## OpenSnitch
+
+`opensnitch/rules/` hold the vpn-only rules for the agents: each one may leave
+only through the interfaces listed in its `000-vpnonly-allow-*` rule, anything
+else hits `001-vpnonly-deny-*`. `opensnitch/killswitch/` holds the three rules
+that cut the agents off everything but loopback.
+
+The bar button (Settings > Bar > Buttons) and `vpnonly-killswitch on|off|toggle`
+arm and disarm the kill switch without a password: sudoers allows exactly the
+commands that copy the root-owned rules in, delete them, and close the
+connections the agents already hold open (OpenSnitch only judges the first
+packet of a TCP connection).
+
+```
+sudo -A install -d -m 755 /etc/opensnitchd/killswitch
+sudo -A install -m 600 opensnitch/killswitch/*.json /etc/opensnitchd/killswitch/
+for f in opensnitch/rules/*.json; do    # one by one, in place: see the note below
+    sudo -A tee /etc/opensnitchd/rules/${f##*/} < $f > /dev/null
+    sudo -A chmod 600 /etc/opensnitchd/rules/${f##*/}
+done
+sudo -A install -m 600 opensnitch/default-config.json /etc/opensnitchd/
+sudo -A install -m 755 system/bin/vpnonly-cut /usr/local/bin/
+sudo -A install -m 440 system/sudoers.d/vpnonly-killswitch /etc/sudoers.d/
+install -m 755 bin/vpnonly-killswitch ~/.local/bin/
+sed "s|^file=~/|file=$HOME/|" opensnitch/ui/settings.conf > ~/.config/opensnitch/settings.conf
+```
+
+Never replace a rule file that already exists with `install` or `mv`: the daemon
+sees the old file deleted, and it removes the rule from disk.
+
 ## Theme
 
 `theme/palettes/*.sh` hold the colours as Material 3 roles plus the sixteen
