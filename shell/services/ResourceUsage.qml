@@ -6,9 +6,6 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-/**
- * Simple polled resource usage service with RAM, Swap, and CPU usage.
- */
 Singleton {
     id: root
 	property real memoryTotal: 1
@@ -21,6 +18,12 @@ Singleton {
     property real swapUsedPercentage: swapTotal > 0 ? (swapUsed / swapTotal) : 0
     property real cpuUsage: 0
     property var previousCpuStats
+
+    property string gpuDevice: "" // PCI address of the NVIDIA card, empty when there is none
+    property bool gpuAsleep: true
+    property real gpuUsage: 0
+    property real gpuMemoryUsed: 0 // MiB
+    property real gpuMemoryTotal: 0 // MiB
 
     property string maxAvailableMemoryString: kbToGbString(ResourceUsage.memoryTotal)
     property string maxAvailableSwapString: kbToGbString(ResourceUsage.swapTotal)
@@ -92,10 +95,54 @@ Singleton {
                 previousCpuStats = { total, idle }
             }
 
+            root.updateGpu()
             root.updateHistories()
             interval = Config.options?.resources?.updateInterval ?? 3000
         }
 	}
+
+    // Asking nvidia-smi wakes a suspended card and keeps it drawing power, so a
+    // sleeping card is reported idle from sysfs alone.
+    function updateGpu() {
+        if (root.gpuDevice === "") return;
+        fileGpuPower.reload();
+        root.gpuAsleep = fileGpuPower.text().trim() !== "active";
+        if (root.gpuAsleep) {
+            root.gpuUsage = 0;
+            root.gpuMemoryUsed = 0;
+        } else if (!gpuQueryProc.running) {
+            gpuQueryProc.running = true;
+        }
+    }
+
+    FileView {
+        id: fileGpuPower
+        blockLoading: true
+        path: root.gpuDevice === "" ? "" : `/sys/bus/pci/devices/${root.gpuDevice}/power/runtime_status`
+    }
+
+    Process {
+        id: findGpuProc
+        running: true
+        command: ["bash", "-c", "lspci -Dn -d 10de::0300 | awk 'NR==1{print $1}'"]
+        stdout: StdioCollector {
+            onStreamFinished: root.gpuDevice = text.trim()
+        }
+    }
+
+    Process {
+        id: gpuQueryProc
+        command: ["nvidia-smi", "--query-gpu=utilization.gpu,memory.used,memory.total", "--format=csv,noheader,nounits"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const [usage, used, total] = text.trim().split(",").map(Number);
+                if (isNaN(usage)) return;
+                root.gpuUsage = usage / 100;
+                root.gpuMemoryUsed = used;
+                root.gpuMemoryTotal = total;
+            }
+        }
+    }
 
 	FileView { id: fileMeminfo; path: "/proc/meminfo" }
     FileView { id: fileStat; path: "/proc/stat" }
