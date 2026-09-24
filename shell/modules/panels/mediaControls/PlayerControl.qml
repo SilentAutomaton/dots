@@ -14,7 +14,10 @@ import Quickshell.Services.Mpris
 
 Item { // Player instance
     id: root
-    required property MprisPlayer player
+    // An MprisPlayer, or Mpd, which exposes the same properties.
+    required property var player
+    property var seek: seconds => root.player.position = seconds
+    property string sourceLabel: ""
     property var artUrl: player?.trackArtUrl
     property string artDownloadLocation: Directories.coverArt
     property string artFileName: Qt.md5(artUrl)
@@ -185,6 +188,12 @@ Item { // Player instance
                 spacing: 2
 
                 StyledText {
+                    visible: root.sourceLabel !== ""
+                    font.pixelSize: Appearance.font.pixelSize.smallest
+                    color: blendedColors.colSubtext
+                    text: root.sourceLabel
+                }
+                StyledText {
                     id: trackTitle
                     Layout.fillWidth: true
                     font.pixelSize: Appearance.font.pixelSize.large
@@ -248,7 +257,7 @@ Item { // Player instance
                                     handleColor: blendedColors.colPrimary
                                     value: root.player?.position / root.player?.length
                                     onMoved: {
-                                        root.player.position = value * root.player.length;
+                                        root.seek(value * root.player.length);
                                     }
                                 }
                             }
