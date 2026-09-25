@@ -1,5 +1,5 @@
 # Read by matrix-news-viewer when its palette preset is "theme".
-rain = "#${term2}"
-cursor = "#${term10}"
-text = "#${primary}"
+rain = "#${primary}"
+cursor = "#${primary_fixed}"
+text = "#${tertiary}"
 background = "#${shadow}"
