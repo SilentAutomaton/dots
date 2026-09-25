@@ -79,6 +79,9 @@ SettingsPage {
                 { "displayName": "Matrix news", "value": "matrix" }
             ]
         }
+        MatrixRainSettings {
+            visible: Config.options.background.mode === "matrix"
+        }
         RippleButtonWithIcon {
             Layout.leftMargin: 8
             visible: Config.options.background.mode === "matrix"
@@ -94,6 +97,7 @@ SettingsPage {
 
         RowLayout {
             Layout.fillWidth: true
+            visible: Config.options.background.mode !== "matrix"
             spacing: 16
 
             StyledImage {
@@ -134,21 +138,25 @@ SettingsPage {
         }
 
         SettingsLabel {
+            visible: Config.options.background.mode !== "matrix"
             text: "Parallax"
         }
         ConfigSwitch {
+            visible: Config.options.background.mode !== "matrix"
             buttonIcon: "view_week"
             text: "Shift with the workspace"
             checked: Config.options.background.parallax.enableWorkspace
             onCheckedChanged: Config.options.background.parallax.enableWorkspace = checked
         }
         ConfigSwitch {
+            visible: Config.options.background.mode !== "matrix"
             buttonIcon: "side_navigation"
             text: "Shift when a sidebar opens"
             checked: Config.options.background.parallax.enableSidebar
             onCheckedChanged: Config.options.background.parallax.enableSidebar = checked
         }
         ConfigSpinBox {
+            visible: Config.options.background.mode !== "matrix"
             icon: "loupe"
             text: "Zoom (%)"
             value: Math.round(Config.options.background.parallax.workspaceZoom * 100)
