@@ -251,6 +251,15 @@ Singleton {
                 }
             }
 
+            property JsonObject firewallPrompts: JsonObject {
+                // Seconds a connection waits for an answer before it is denied
+                // once; the daemon itself gives up at 120.
+                property int hold: 115
+                property string defaultAction: "allow"
+                property string defaultDuration: "12h"
+                property string defaultTarget: "path"
+            }
+
             property JsonObject osd: JsonObject {
                 property int timeout: 1000
             }

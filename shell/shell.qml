@@ -16,6 +16,7 @@ import qs.modules.panels.notificationPopup
 import qs.modules.panels.onScreenDisplay
 import qs.modules.panels.overview
 import qs.modules.panels.polkit
+import qs.modules.panels.prompts
 import qs.modules.panels.regionSelector
 import qs.modules.panels.screenCorners
 import qs.modules.panels.sessionScreen
@@ -48,6 +49,7 @@ ShellRoot {
     PanelLoader { component: OnScreenDisplay {} }
     PanelLoader { component: Overview {} }
     PanelLoader { component: Polkit {} }
+    PanelLoader { component: Prompts {} }
     PanelLoader { component: RegionSelector {} }
     PanelLoader { component: ScreenCorners {} }
     PanelLoader { component: SessionScreen {} }

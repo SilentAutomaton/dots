@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import qs.modules.common
 import qs.modules.common.widgets
+import qs.services
 
 SettingsPage {
     SettingsSection {
@@ -219,6 +220,39 @@ SettingsPage {
             placeholder: "eDP-1"
             value: Config.options.notifications.forceMonitor.name
             onAccepted: value => Config.options.notifications.forceMonitor.name = value
+        }
+        ConfigSpinBox {
+            icon: "shield"
+            text: "Firewall prompt holds the connection for (s)"
+            value: Config.options.firewallPrompts.hold
+            from: 0
+            to: 115
+            stepSize: 5
+            onValueChanged: Config.options.firewallPrompts.hold = value
+        }
+        SettingsLabel {
+            text: "Firewall prompt defaults"
+        }
+        ConfigSelectionArray {
+            options: FirewallPrompts.actions
+            currentValue: Config.options.firewallPrompts.defaultAction
+            onSelected: value => Config.options.firewallPrompts.defaultAction = value
+        }
+        ConfigSelectionArray {
+            options: FirewallPrompts.durations
+            currentValue: Config.options.firewallPrompts.defaultDuration
+            onSelected: value => Config.options.firewallPrompts.defaultDuration = value
+        }
+        ConfigSelectionArray {
+            options: [
+                { "displayName": "Executable", "value": "path" },
+                { "displayName": "Command line", "value": "command" },
+                { "displayName": "Host", "value": "host" },
+                { "displayName": "IP", "value": "ip" },
+                { "displayName": "Port", "value": "port" },
+            ]
+            currentValue: Config.options.firewallPrompts.defaultTarget
+            onSelected: value => Config.options.firewallPrompts.defaultTarget = value
         }
         ConfigSpinBox {
             icon: "volume_up"

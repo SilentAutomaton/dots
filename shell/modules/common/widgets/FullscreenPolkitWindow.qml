@@ -11,9 +11,10 @@ import Quickshell.Wayland
 Scope {
     id: root
     required property Component contentComponent
-    
+    property bool active: PolkitService.active
+
     Loader {
-        active: PolkitService.active
+        active: root.active
         sourceComponent: Variants {
             model: Quickshell.screens
             delegate: PanelWindow {

@@ -13,11 +13,15 @@ Scope {
 
     PanelWindow {
         id: root
-        visible: (Notifications.popupList.length > 0) && !GlobalStates.screenLocked
+        readonly property bool prompting: promptList.visible
+        visible: (Notifications.popupList.length > 0 || prompting) && !GlobalStates.screenLocked
         screen: Quickshell.screens.find(s => Config.options.notifications.forceMonitor.enable ? s.name === Config.options.notifications.forceMonitor.name : s.name === Hyprland.focusedMonitor?.name) ?? null
 
         WlrLayershell.namespace: "quickshell:notificationPopup"
         WlrLayershell.layer: WlrLayer.Overlay
+        // A password field needs the keyboard; firewall cards take clicks only,
+        // so a game keeps its focus.
+        WlrLayershell.keyboardFocus: AskpassService.requests.length > 0 ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
         exclusiveZone: 0
 
         anchors {
@@ -28,15 +32,29 @@ Scope {
 
         mask: Region {
             item: listview.contentItem
+            Region {
+                item: promptList
+            }
         }
 
         color: "transparent"
         implicitWidth: Appearance.sizes.notificationPopupWidth
 
+        PromptList {
+            id: promptList
+            anchors {
+                top: parent.top
+                right: parent.right
+                rightMargin: 4
+                topMargin: 4
+            }
+            width: parent.width - Appearance.sizes.elevationMargin * 2
+        }
+
         NotificationListView {
             id: listview
             anchors {
-                top: parent.top
+                top: promptList.visible ? promptList.bottom : parent.top
                 bottom: parent.bottom
                 right: parent.right
                 rightMargin: 4

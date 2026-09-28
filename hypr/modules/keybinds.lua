@@ -1,6 +1,6 @@
 -- Letters follow a mnemonic: U usage, N notifications, V paste, M media,
--- W wallpaper, O OCR, L lock, R reload. Number keys use keycodes, so the
--- binds keep working under the Russian layout.
+-- W wallpaper, A answer a firewall prompt, O OCR, L lock, R reload. Number
+-- keys use keycodes, so the binds keep working under the Russian layout.
 
 local function shell(name)
     return hl.dsp.global("quickshell:" .. name)
@@ -29,6 +29,9 @@ hl.bind("SUPER + Tab", shell("overviewWorkspacesToggle"))
 hl.bind("SUPER + V", shell("overviewClipboardToggle"))
 hl.bind("SUPER + U", shell("sidebarLeftToggle"))
 hl.bind("SUPER + N", shell("sidebarRightToggle"))
+hl.bind("SUPER + A", shell("firewallAllow"))
+hl.bind("SUPER + SHIFT + A", shell("firewallDeny"))
+hl.bind("SUPER + ALT + A", shell("firewallDetails"))
 hl.bind("SUPER + M", shell("mediaControlsToggle"))
 hl.bind("SUPER + W", shell("wallpaperSelectorToggle"))
 hl.bind("SUPER + Escape", shell("sessionToggle"))
