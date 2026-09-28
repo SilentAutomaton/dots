@@ -1,5 +1,5 @@
 hl.window_rule({ match = { class = ".*" }, no_blur = true })
-hl.window_rule({ match = { class = "^(md\\.obsidian\\.Obsidian|obsidian)$" }, opacity = 0.95, no_blur = false })
+hl.window_rule({ match = { class = "^(md\\.obsidian\\.Obsidian|obsidian)$" }, opacity = 0.85, no_blur = false })
 
 for _, title in ipairs({
     "^(Open File)(.*)$",
