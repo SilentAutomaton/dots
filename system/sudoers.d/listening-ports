@@ -1,2 +1,5 @@
 # The ports card in the right sidebar: owners of root sockets need root. Exactly these arguments, so no -K.
-%wheel ALL=(root) NOPASSWD: /usr/bin/ss -tulpnH
+# It polls every 10 seconds, so sudo neither logs the call nor opens a PAM session for it.
+Cmnd_Alias LISTENING_PORTS = /usr/bin/ss -tulpnH
+Defaults!LISTENING_PORTS !log_allowed, !pam_session
+%wheel ALL=(root) NOPASSWD: LISTENING_PORTS

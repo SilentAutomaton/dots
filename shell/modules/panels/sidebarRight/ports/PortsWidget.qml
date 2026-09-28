@@ -151,6 +151,9 @@ Rectangle {
                                     implicitHeight: chipText.implicitHeight + 4
                                     radius: Appearance.rounding.full
                                     color: ColorUtils.transparentize(tone, 0.8)
+                                    border.width: modelData.change === "opened" ? 1 : 0
+                                    border.color: tone
+                                    opacity: modelData.change === "closed" ? 0.5 : 1
 
                                     StyledText {
                                         id: chipText
@@ -158,6 +161,7 @@ Rectangle {
                                         text: `${chip.modelData.port}/${chip.modelData.proto}`
                                         font.pixelSize: Appearance.font.pixelSize.smaller
                                         font.family: Appearance.font.family.numbers
+                                        font.strikeout: chip.modelData.change === "closed"
                                         color: chip.tone
                                     }
                                 }
