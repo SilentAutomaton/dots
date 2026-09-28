@@ -84,11 +84,39 @@ sudo -A install -m 755 system/bin/vpnonly-cut /usr/local/bin/
 sudo -A install -m 440 system/sudoers.d/vpnonly-killswitch /etc/sudoers.d/
 sudo -A install -m 440 system/sudoers.d/listening-ports /etc/sudoers.d/
 install -m 755 bin/vpnonly-killswitch ~/.local/bin/
-sed "s|^file=~/|file=$HOME/|" opensnitch/ui/settings.conf > ~/.config/opensnitch/settings.conf
+sed -e "s|^file=~/|file=$HOME/|" -e "s|/UID/|/$(id -u)/|" opensnitch/ui/settings.conf > ~/.config/opensnitch/settings.conf
 ```
 
 Never replace a rule file that already exists with `install` or `mv`: the daemon
 sees the old file deleted, and it removes the rule from disk.
+
+## Firewall and sudo prompts
+
+`bin/snitch-prompt` takes the daemon's socket, `/tmp/osui.sock`, and relays
+everything except the connection prompts to opensnitch-ui, which listens on
+`$XDG_RUNTIME_DIR/opensnitch-gui.sock` instead. The prompts become cards above
+the notifications: they take no keyboard focus, have no countdown, and open
+into a full window with every option. Super+A allows the oldest prompt,
+Super+Shift+A denies it, Super+Alt+A opens its window.
+
+The daemon asks one question at a time and gives up after 120 s. A connection
+waits up to the hold time (Settings > Panels, 115 s by default) and passes if
+the answer comes in time. After that it is denied once, the card stays, and the
+answer becomes a rule for the next attempt. While a connection waits, the
+daemon denies other unknown connections without asking.
+
+`bin/shell-askpass` asks for sudo passwords in the same place and shows the
+whole command. It takes the context and the danger check from
+`/usr/local/bin/claude-askpass` and hands over to it when the shell is not
+running.
+
+```
+install -m 755 bin/snitch-prompt ~/.local/bin/
+sudo -A install -m 755 bin/shell-askpass /usr/local/bin/
+```
+
+`opensnitch/rules/allow-steam-games.json` lets every game and Proton build in
+both Steam libraries out without a prompt.
 
 ## NVIDIA power
 
@@ -157,6 +185,7 @@ in its config the rain takes the palette colours from `theme.toml`.
 | Super+P | Pin |
 | Super+U | Usage sidebar |
 | Super+N | Notifications sidebar |
+| Super+A, Super+Shift+A, Super+Alt+A | Allow, deny, open the oldest firewall prompt |
 | Super+V | Clipboard |
 | Super+M | Media controls |
 | Super+Shift+M, Super+Alt+M | Mute output, mute microphone |
