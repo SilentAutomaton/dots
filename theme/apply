@@ -40,6 +40,15 @@ awk 'FNR == NR { if (/^\[/) drop[$0] = 1; next }
 cat "$state/kdeglobals" >> "$kde.new"
 mv "$kde.new" "$kde"
 
+# Obsidian loads themes only from inside a vault, so every known vault gets a copy.
+vaults=${XDG_CONFIG_HOME:-$HOME/.config}/obsidian/obsidian.json
+[[ -r $vaults ]] && jq -r '.vaults[].path' "$vaults" | while read -r vault; do
+    [[ -d $vault/.obsidian ]] || continue
+    theme=$vault/.obsidian/themes/Palette
+    install -D -m 644 "$state/obsidian.css" "$theme/theme.css"
+    echo '{"name": "Palette", "version": "1.0.0", "minAppVersion": "1.0.0", "author": "dots"}' > "$theme/manifest.json"
+done
+
 [[ -n ${HYPRLAND_INSTANCE_SIGNATURE:-} ]] && hyprctl reload >/dev/null
 pkill -USR1 -x kitty || true
 tmux source-file "$HOME/.config/tmux/tmux.conf" 2>/dev/null || true
