@@ -11,6 +11,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("pidof -x opensnitch-ui || opensnitch-ui --background")
     hl.exec_cmd("dbus-update-activation-environment --all")
     hl.exec_cmd("sleep 1 && dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
+    hl.exec_cmd("easyeffects --service-mode")
 
     hl.exec_cmd("wl-paste --type text --watch bash -c 'cliphist store && qs -c shell ipc call cliphistService update'")
     hl.exec_cmd("wl-paste --type image --watch bash -c 'cliphist store && qs -c shell ipc call cliphistService update'")

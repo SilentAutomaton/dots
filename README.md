@@ -12,6 +12,7 @@ Hyprland, a Quickshell shell and the tools around them, themed from one palette.
 | `zsh/environment.d/` | `~/.config/environment.d` |
 | `zsh/.zshrc`, `zsh/.zshenv`, `zsh/.sh/` | `~/.zshrc`, `~/.zshenv`, `~/.sh` |
 | `theme/` | `~/.config/theme` |
+| `applications/` | `~/.local/share/applications` |
 
 ## Install
 
@@ -29,6 +30,7 @@ for app in hypr kitty foot fuzzel wlogout tmux yazi glow nvim btop mpv fontconfi
 done
 rsync -a $d/zsh/environment.d/ ~/.config/environment.d/
 rsync -a $d/shell/ ~/.config/quickshell/shell/
+rsync -a $d/applications/ ~/.local/share/applications/
 rsync -a $d/zsh/.sh/ ~/.sh/
 cp $d/zsh/.zshrc $d/zsh/.zshenv ~/
 [ -e ~/.sh/env.local ] || cp $d/zsh/.sh/env.local.example ~/.sh/env.local   # then fill in the key
@@ -52,6 +54,7 @@ rsync -a --relative --delete --exclude-from=$d/.gitignore \
     hypr kitty foot fuzzel wlogout tmux yazi glow nvim btop mpv fontconfig gtk-3.0 gtk-4.0 theme $d/
 cd ~/.config/quickshell && rsync -a --relative --delete shell $d/
 cp ~/.zshrc ~/.zshenv $d/zsh/ && rsync -a --exclude env.local ~/.sh/ $d/zsh/.sh/
+cp ~/.local/share/applications/discord-AM.desktop $d/applications/
 ```
 
 ## OpenSnitch
@@ -172,3 +175,10 @@ in its config the rain takes the palette colours from `theme.toml`.
 | Super+S, Super+Alt+S | Scratchpad, send to scratchpad |
 | Super+arrows, Super+Shift+arrows | Focus, move window |
 | Super+; and Super+' | Split ratio |
+
+## Discord overlay
+
+`applications/discord-AM.desktop` shadows the AM launcher of the same name and
+starts Discord through `discord-with-overlay`, from the discord_overlay
+repository. `Shift + grave` in `hypr/modules/keybinds.lua` toggles its
+interactive mode.

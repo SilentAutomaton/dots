@@ -122,3 +122,6 @@ hl.bind("SUPER + SHIFT + B", exec("ungoogled-chromium"))
 hl.bind("SUPER + T", exec("/usr/local/bin/telegram"))
 hl.bind("SUPER + J", exec("obsidian"))
 hl.bind("CTRL + SHIFT + Escape", exec("kitty -1 btop"))
+
+-- Discord overlay, by keycode for the Russian layout
+hl.bind("SUPER + code:49", exec("discord-overlay toggle"))

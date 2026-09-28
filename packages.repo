@@ -18,6 +18,7 @@ polkit-gnome
 xdg-user-dirs
 networkmanager
 wireplumber
+easyeffects
 upower
 brightnessctl
 ddcutil
