@@ -1,0 +1,18 @@
+{
+  "created": "2026-09-28T00:00:00Z",
+  "updated": "2026-09-28T00:00:00Z",
+  "name": "allow-steam-games",
+  "description": "Steam games and the Proton builds that run them, in both libraries",
+  "enabled": true,
+  "precedence": false,
+  "nolog": false,
+  "action": "allow",
+  "duration": "always",
+  "operator": {
+    "type": "regexp",
+    "operand": "process.path",
+    "sensitive": false,
+    "data": "^(/home/[^/]+/\\.local/share/Steam|/mnt/SteamLibrary)/(steamapps/common|compatibilitytools\\.d)/.*$",
+    "list": null
+  }
+}
