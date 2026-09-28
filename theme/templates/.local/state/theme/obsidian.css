@@ -1,0 +1,113 @@
+/* Palette: the default Obsidian theme recoloured from theme/palettes. */
+.theme-dark,
+.theme-light {
+    --color-accent: #${primary};
+    --color-accent-1: #${primary_fixed_dim};
+    --color-accent-2: #${primary_fixed};
+
+    --color-red: #${term1};
+    --color-red-rgb: ${term1_rgb};
+    --color-green: #${term2};
+    --color-green-rgb: ${term2_rgb};
+    --color-yellow: #${term11};
+    --color-yellow-rgb: ${term11_rgb};
+    --color-orange: #${term3};
+    --color-orange-rgb: ${term3_rgb};
+    --color-blue: #${term4};
+    --color-blue-rgb: ${term4_rgb};
+    --color-purple: #${term5};
+    --color-purple-rgb: ${term5_rgb};
+    --color-cyan: #${term6};
+    --color-cyan-rgb: ${term6_rgb};
+    --color-pink: #${term13};
+    --color-pink-rgb: ${term13_rgb};
+
+    --background-primary: #${surface};
+    --background-primary-alt: #${surface_container_low};
+    --background-secondary: #${surface_container_lowest};
+    --background-secondary-alt: #${surface_container};
+    --background-modifier-border: #${outline_variant};
+    --background-modifier-border-hover: #${outline};
+    --background-modifier-border-focus: #${primary};
+    --background-modifier-hover: rgba(${on_surface_rgb}, 0.07);
+    --background-modifier-active-hover: rgba(${primary_rgb}, 0.15);
+    --background-modifier-form-field: #${surface_container_high};
+    --background-modifier-error: #${error};
+    --background-modifier-error-rgb: ${error_rgb};
+    --background-modifier-success: #${success};
+    --background-modifier-success-rgb: ${success_rgb};
+    --background-modifier-message: #${surface_container_highest};
+
+    --text-normal: #${on_surface};
+    --text-muted: #${on_surface_variant};
+    --text-faint: #${outline};
+    --text-on-accent: #${on_primary};
+    --text-error: #${error};
+    --text-success: #${success};
+    --text-accent: #${primary};
+    --text-accent-hover: #${primary_fixed};
+    --text-selection: rgba(${primary_rgb}, 0.3);
+    --text-highlight-bg: rgba(${tertiary_rgb}, 0.3);
+
+    --interactive-normal: #${surface_container_high};
+    --interactive-hover: #${surface_container_highest};
+    --interactive-accent: #${primary};
+    --interactive-accent-hover: #${primary_fixed};
+
+    --h1-color: #${primary};
+    --h2-color: #${secondary};
+    --h3-color: #${tertiary};
+    --h4-color: #${on_primary_container};
+    --h5-color: #${on_secondary_container};
+    --h6-color: #${on_tertiary_container};
+
+    --link-color: #${primary};
+    --link-color-hover: #${primary_fixed};
+    --link-external-color: #${secondary};
+    --link-external-color-hover: #${secondary_fixed};
+    --link-unresolved-color: #${error};
+    --tag-color: #${tertiary};
+    --tag-background: rgba(${tertiary_rgb}, 0.12);
+    --tag-background-hover: rgba(${tertiary_rgb}, 0.2);
+
+    --code-background: #${surface_container_low};
+    --code-normal: #${on_surface};
+    --code-comment: #${outline};
+    --code-keyword: #${term5};
+    --code-function: #${term4};
+    --code-string: #${term2};
+    --code-value: #${term3};
+    --code-property: #${term6};
+    --code-tag: #${term1};
+    --code-operator: #${term6};
+    --code-punctuation: #${on_surface_variant};
+    --code-important: #${term11};
+
+    --blockquote-border-color: #${primary};
+    --checkbox-color: #${primary};
+    --checkbox-color-hover: #${primary_fixed};
+    --checkbox-border-color: #${outline};
+    --hr-color: #${outline_variant};
+    --scrollbar-thumb-bg: rgba(${on_surface_rgb}, 0.12);
+    --scrollbar-active-thumb-bg: rgba(${on_surface_rgb}, 0.25);
+
+    --titlebar-background: #${surface_container_lowest};
+    --titlebar-background-focused: #${surface_container_lowest};
+    --titlebar-text-color: #${on_surface_variant};
+    --titlebar-text-color-focused: #${on_surface};
+    --ribbon-background: #${surface_container_lowest};
+    --ribbon-background-collapsed: #${surface};
+    --tab-text-color: #${on_surface_variant};
+    --tab-text-color-focused: #${on_surface_variant};
+    --tab-text-color-focused-active: #${on_surface};
+    --tab-text-color-focused-active-current: #${on_surface};
+    --tab-container-background: #${surface_container_lowest};
+    --tab-outline-color: #${outline_variant};
+    --divider-color: #${outline_variant};
+    --graph-node: #${on_surface_variant};
+    --graph-node-focused: #${primary};
+    --graph-node-tag: #${tertiary};
+    --graph-node-attachment: #${secondary};
+    --graph-node-unresolved: #${error};
+    --graph-line: #${outline_variant};
+}
