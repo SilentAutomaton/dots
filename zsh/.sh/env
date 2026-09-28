@@ -20,7 +20,7 @@ eval "$(pyenv init - --no-rehash zsh)"
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
 ### sudo askpass
-export SUDO_ASKPASS=/usr/local/bin/claude-askpass
+export SUDO_ASKPASS=/usr/local/bin/shell-askpass
 
 ### ssh-agent via gpg-agent
 export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket 2>/dev/null)"
