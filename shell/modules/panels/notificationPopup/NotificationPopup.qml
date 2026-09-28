@@ -13,7 +13,7 @@ Scope {
 
     PanelWindow {
         id: root
-        readonly property bool prompting: promptList.visible
+        readonly property bool prompting: AskpassService.requests.length + FirewallPrompts.prompts.length > 0
         visible: (Notifications.popupList.length > 0 || prompting) && !GlobalStates.screenLocked
         screen: Quickshell.screens.find(s => Config.options.notifications.forceMonitor.enable ? s.name === Config.options.notifications.forceMonitor.name : s.name === Hyprland.focusedMonitor?.name) ?? null
 
