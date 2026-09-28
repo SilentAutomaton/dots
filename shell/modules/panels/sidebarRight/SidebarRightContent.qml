@@ -14,6 +14,7 @@ import qs.modules.panels.sidebarRight.quickToggles.classicStyle
 
 import qs.modules.panels.sidebarRight.bluetoothDevices
 import qs.modules.panels.sidebarRight.nightLight
+import qs.modules.panels.sidebarRight.ports
 import qs.modules.panels.sidebarRight.volumeMixer
 import qs.modules.panels.sidebarRight.wifiNetworks
 
@@ -99,6 +100,12 @@ Item {
                 Layout.alignment: Qt.AlignHCenter
                 Layout.fillHeight: true
                 Layout.fillWidth: true
+            }
+
+            PortsWidget {
+                Layout.fillHeight: false
+                Layout.fillWidth: true
+                Layout.preferredHeight: implicitHeight
             }
 
             BottomWidgetGroup {

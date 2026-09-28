@@ -1,0 +1,2 @@
+# The ports card in the right sidebar: owners of root sockets need root. Exactly these arguments, so no -K.
+%wheel ALL=(root) NOPASSWD: /usr/bin/ss -tulpnH

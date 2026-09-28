@@ -62,6 +62,9 @@ Singleton {
                 property JsonObject bottomGroup: JsonObject {
                     property bool collapsed: false
                 }
+                property JsonObject ports: JsonObject {
+                    property bool collapsed: false
+                }
             }
 
             property JsonObject idle: JsonObject {

@@ -79,6 +79,7 @@ sudo -A chmod 644 /etc/opensnitchd/rules/000-vpnonly-allow-*.json
 sudo -A install -m 600 opensnitch/default-config.json /etc/opensnitchd/
 sudo -A install -m 755 system/bin/vpnonly-cut /usr/local/bin/
 sudo -A install -m 440 system/sudoers.d/vpnonly-killswitch /etc/sudoers.d/
+sudo -A install -m 440 system/sudoers.d/listening-ports /etc/sudoers.d/
 install -m 755 bin/vpnonly-killswitch ~/.local/bin/
 sed "s|^file=~/|file=$HOME/|" opensnitch/ui/settings.conf > ~/.config/opensnitch/settings.conf
 ```
