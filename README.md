@@ -160,6 +160,10 @@ matugen and applies it. `apply tomorrow-night` goes back.
 
 The settings app (Super+I) and the launcher action `/theme <name>` do the same.
 
+`apply` also copies the rendered `obsidian.css` as the theme "Palette" into
+every vault listed in `~/.config/obsidian/obsidian.json`. Pick it once in
+Obsidian: Settings, Appearance, Themes. Obsidian reloads it on each apply.
+
 ## Matrix wallpaper
 
 Settings (Super+I), Appearance, Wallpaper: "Matrix news" runs
