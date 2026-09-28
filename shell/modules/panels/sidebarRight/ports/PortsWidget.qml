@@ -12,7 +12,12 @@ Rectangle {
     clip: true
     implicitHeight: content.implicitHeight + 20
     property bool collapsed: Persistent.states.sidebar.ports.collapsed
-    readonly property var exposureColors: [Appearance.colors.colPrimary, Appearance.colors.colTertiary, Appearance.colors.colError]
+    // Monochrome themes leave only error and success with a hue: green, amber between them, red.
+    readonly property var exposureColors: [
+        Appearance.m3colors.m3success,
+        ColorUtils.mix(Appearance.colors.colError, Appearance.m3colors.m3success, 0.5),
+        Appearance.colors.colError
+    ]
     readonly property var exposureNames: ["local", "interface", "all interfaces"]
     readonly property int total: ListeningPorts.counts.reduce((sum, count) => sum + count, 0)
 
