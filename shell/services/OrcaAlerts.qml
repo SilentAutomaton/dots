@@ -41,11 +41,11 @@ Singleton {
         }];
     }
 
-    function answer(id: int, index: int) {
+    function answer(id: real, index: int) {
         link.item?.write(JSON.stringify({ "type": "answer", "id": id, "index": index }) + "\n");
     }
 
-    function dismiss(id: int) {
+    function dismiss(id: real) {
         const alert = alerts.find(a => a.id === id);
         if (alert?.buttons)
             link.item?.write(JSON.stringify({ "type": "dismiss", "id": id }) + "\n");

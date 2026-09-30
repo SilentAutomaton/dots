@@ -235,7 +235,8 @@ class ShellClient(socketserver.StreamRequestHandler):
             for line in self.rfile:
                 message = json.loads(line)
                 if message["type"] == "answer":
-                    self.dialogs.answer(message)
+                    # AT-SPI is not thread safe; the press runs on the main loop
+                    GLib.idle_add(self.dialogs.answer, message)
                 elif message["type"] == "dismiss":
                     self.dialogs.drop(int(message["id"]))
         except (ConnectionResetError, json.JSONDecodeError):
