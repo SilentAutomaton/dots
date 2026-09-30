@@ -110,8 +110,15 @@ whole command. It takes the context and the danger check from
 `/usr/local/bin/claude-askpass` and hands over to it when the shell is not
 running.
 
+`bin/orca-watch` reads OrcaSlicer's printer error dialogs over AT-SPI and shows
+them as cards in the same place, with the dialog's buttons. Orca draws these
+buttons itself and gives them no names, so the labels come from their order in
+OrcaSlicer 2.4.2; a new Orca version can shift them. A card button focuses the
+real button and sends it Return. OrcaSlicer's desktop notifications become
+cards too.
+
 ```
-install -m 755 bin/snitch-prompt ~/.local/bin/
+install -m 755 bin/snitch-prompt bin/orca-watch ~/.local/bin/
 sudo -A install -m 755 bin/shell-askpass /usr/local/bin/
 ```
 

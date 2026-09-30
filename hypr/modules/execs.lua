@@ -10,6 +10,8 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("hypridle")
     -- Takes the daemon's socket and relays everything but the prompts to opensnitch-ui.
     hl.exec_cmd("pidof -x snitch-prompt || $HOME/.local/bin/snitch-prompt")
+    -- Turns OrcaSlicer's modal dialogs into cards over AT-SPI.
+    hl.exec_cmd("pidof -x orca-watch || $HOME/.local/bin/orca-watch")
     hl.exec_cmd("pidof -x opensnitch-ui || opensnitch-ui --background")
     hl.exec_cmd("dbus-update-activation-environment --all")
     hl.exec_cmd("sleep 1 && dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")

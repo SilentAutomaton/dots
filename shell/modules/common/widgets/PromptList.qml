@@ -4,12 +4,12 @@ import QtQuick
 import Quickshell
 import QtQuick.Layouts
 
-// Pending firewall and sudo prompts. They skip the notification server: they
-// never time out and silent mode does not hide them.
+// Pending firewall, sudo and OrcaSlicer prompts. They skip the notification
+// server: they never time out and silent mode does not hide them.
 ColumnLayout {
     id: root
     spacing: 6
-    visible: AskpassService.requests.length + FirewallPrompts.prompts.length > 0
+    visible: AskpassService.requests.length + FirewallPrompts.prompts.length + OrcaAlerts.alerts.length > 0
 
     Repeater {
         // ScriptModel keeps a card, and the password typed into it, while others come and go
@@ -30,6 +30,16 @@ ColumnLayout {
             required property var modelData
             Layout.fillWidth: true
             prompt: modelData
+        }
+    }
+    Repeater {
+        model: ScriptModel {
+            values: OrcaAlerts.alerts
+        }
+        delegate: OrcaAlertCard {
+            required property var modelData
+            Layout.fillWidth: true
+            alert: modelData
         }
     }
 }

@@ -17,4 +17,10 @@ Scope {
             AskpassPromptDetails {}
         }
     }
+    FullscreenPolkitWindow {
+        active: OrcaAlerts.details !== null
+        contentComponent: Component {
+            OrcaAlertDetails {}
+        }
+    }
 }

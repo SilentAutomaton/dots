@@ -2,6 +2,7 @@ pragma Singleton
 pragma ComponentBehavior: Bound
 
 import qs.modules.common
+import qs.services
 import qs
 import QtQuick
 import Quickshell
@@ -168,6 +169,13 @@ Singleton {
         persistenceSupported: true
 
         onNotification: (notification) => {
+            if (OrcaAlerts.fromOrca(notification.appName, notification.desktopEntry)) {
+                OrcaAlerts.add(notification.appName, notification.summary, notification.body,
+                               notification.image, notification.appIcon,
+                               notification.urgency.toString());
+                notification.dismiss();
+                return;
+            }
             notification.tracked = true
             const newNotifObject = notifComponent.createObject(root, {
                 "notificationId": notification.id + root.idOffset,
