@@ -52,6 +52,14 @@ hl.window_rule({
     match = { class = "^jetbrains-.*$", float = true, title = "^$|^\\s$|^win\\d+$" },
     no_initial_focus = true,
 })
+-- OrcaSlicer's printer error dialogs wait on a hidden workspace; orca-watch
+-- shows them as cards.
+hl.window_rule({
+    match = { class = "^(orca-slicer)$", title = "^(Error|Warning|Info|Unknown)$" },
+    workspace = "special:orca silent",
+    no_initial_focus = true,
+    focus_on_activate = false,
+})
 hl.window_rule({ match = { float = false }, no_shadow = true })
 
 hl.workspace_rule({ workspace = "special:special", gaps_out = 30 })

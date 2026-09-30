@@ -117,6 +117,15 @@ def window_address(title: str) -> str:
     return ""
 
 
+# The window rules park these dialogs on a hidden workspace; Show brings one
+# to the workspace in front of the user.
+def show(address: str) -> None:
+    workspace = json.loads(subprocess.run(["hyprctl", "activeworkspace", "-j"], capture_output=True, text=True).stdout)["id"]
+    subprocess.run(["hyprctl", "dispatch",
+                    "hl.dsp.window.move({ workspace = '%s', window = 'address:%s' })" % (workspace, address)],
+                   capture_output=True)
+
+
 def send_key(keysym: str, address: str) -> None:
     subprocess.run(["hyprctl", "dispatch",
                     "hl.dsp.send_shortcut({ mods = '', key = '%s', window = 'address:%s' })" % (keysym, address)],
@@ -155,7 +164,7 @@ class Dialogs:
             self.drop(dialog_id)
         with self.lock:
             dialog = {"id": next(self.ids), "node": node, "key": dedup, "title": title,
-                      "text": "\n".join(info["texts"]), "buttons": info["buttons"]}
+                      "text": "\n".join(info["texts"]), "buttons": info["buttons"] + [("Show", None)]}
             self.open[dialog["id"]] = dialog
         self.broadcast({"type": "ask", "id": dialog["id"], "title": title,
                         "text": "\n".join(info["texts"]),
@@ -167,7 +176,7 @@ class Dialogs:
         if dialog is None:
             return
         _, button = dialog["buttons"][int(message["index"])]
-        if button.get_role_name() == "push button":
+        if button is not None and button.get_role_name() == "push button":
             try:
                 button.do_action(0)
             except Exception as e:
@@ -176,6 +185,9 @@ class Dialogs:
         address = window_address(dialog["title"])
         if not address:
             print("orca-watch: dialog window not found:", dialog["title"], file=sys.stderr)
+            return
+        if button is None:
+            show(address)
             return
         button.grab_focus()
         send_key("Return", address)

@@ -115,7 +115,9 @@ them as cards in the same place, with the dialog's buttons. Orca draws these
 buttons itself and gives them no names, so the labels come from their order in
 OrcaSlicer 2.4.2; a new Orca version can shift them. A card button focuses the
 real button and sends it Return. OrcaSlicer's desktop notifications become
-cards too.
+cards too. A window rule opens the dialogs titled Error, Warning, Info or
+Unknown on the hidden `special:orca` workspace without focus; Show on the card
+brings the dialog to the current workspace.
 
 ```
 install -m 755 bin/snitch-prompt bin/orca-watch ~/.local/bin/
