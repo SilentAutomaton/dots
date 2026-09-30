@@ -21,20 +21,16 @@ import time
 APP_NAME = "orca-slicer"
 RUNTIME_DIR = os.environ.get("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}")
 SHELL_SOCKET = f"{RUNTIME_DIR}/orca-alerts.sock"
-# wxGTK shows its modal dialogs as plain frames; the project window is a frame
-# too, but its title always ends in the app name, with a * prefix when focused
+# The titles of DeviceErrorDialog, by error level. The window rule in
+# hypr/modules/rules.lua hides the same titles; every other Orca window, like
+# the print job dialog, stays a plain window without a card.
 DIALOG_ROLES = {"frame", "dialog", "alert"}
-MAIN_WINDOW_END = "orcaslicer"
+DIALOG_TITLES = {"Error", "Warning", "Info", "Unknown"}
 NODE_LIMIT = 400
 
 
-def is_main_window(node) -> bool:
-    return clean(node.get_name() or "").lower().endswith(MAIN_WINDOW_END)
-
-
 def is_dialog(node) -> bool:
-    # file choosers need the real window to pick a file, so they stay out
-    return node.get_role_name() in DIALOG_ROLES and not is_main_window(node)
+    return node.get_role_name() in DIALOG_ROLES and clean(node.get_name() or "") in DIALOG_TITLES
 
 
 def clean(text: str) -> str:
