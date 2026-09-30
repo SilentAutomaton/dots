@@ -16,7 +16,7 @@ Singleton {
     property list<var> prompts: []
     property var detailsId: null
     readonly property var details: prompts.find(p => p.id === detailsId) ?? null
-    readonly property bool connected: socket.connected
+    readonly property bool connected: link.item?.connected ?? false
 
     readonly property list<var> actions: [
         { "displayName": "Allow", "icon": "check", "value": "allow" },
@@ -67,8 +67,8 @@ Singleton {
     }
 
     function send(message) {
-        if (socket.connected)
-            socket.write(JSON.stringify(message) + "\n");
+        if (root.connected)
+            link.item.write(JSON.stringify(message) + "\n");
     }
 
     function sendConfig() {
@@ -114,29 +114,37 @@ Singleton {
         }
     }
 
-    Socket {
-        id: socket
-        path: `${Quickshell.env("XDG_RUNTIME_DIR")}/snitch-prompt.sock`
-        connected: true
-        parser: SplitParser {
-            onRead: line => root.handle(JSON.parse(line))
-        }
-        onConnectedChanged: {
-            if (connected) {
-                root.sendConfig();
-            } else {
-                root.prompts = [];
-                root.detailsId = null;
+    // A Socket whose connect was refused never tries again, so every retry
+    // builds a new one. snitch-prompt may start after the shell or restart
+    // under it.
+    LazyLoader {
+        id: link
+        active: true
+        component: Socket {
+            path: `${Quickshell.env("XDG_RUNTIME_DIR")}/snitch-prompt.sock`
+            connected: true
+            parser: SplitParser {
+                onRead: line => root.handle(JSON.parse(line))
             }
+            onConnectedChanged: {
+                if (connected) {
+                    root.sendConfig();
+                } else {
+                    root.prompts = [];
+                    root.detailsId = null;
+                }
+            }
+            onError: reconnectTimer.restart()
         }
     }
 
-    // snitch-prompt may start after the shell or restart under it.
     Timer {
+        id: reconnectTimer
         interval: 3000
-        running: !socket.connected
-        repeat: true
-        onTriggered: socket.connected = true
+        onTriggered: {
+            link.active = false;
+            link.active = true;
+        }
     }
 
     Connections {
