@@ -3,6 +3,8 @@
 .theme-light {
     /* Background alpha, the same as background_opacity in kitty.conf. */
     --palette-alpha: 0.95;
+    /* Side panels are denser so the file tree and outline stay readable. */
+    --palette-sidebar-alpha: 0.90;
 
     --color-accent: #${primary};
     --color-accent-1: #${primary_fixed_dim};
@@ -130,4 +132,8 @@ body,
 .workspace-split.mod-root .view-content,
 .workspace-leaf-content.is-read-mode .markdown-preview-view {
     background-color: transparent !important;
+}
+
+.workspace-split.mod-sidedock {
+    background-color: rgba(${surface_container_lowest_rgb}, var(--palette-sidebar-alpha)) !important;
 }
