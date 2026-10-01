@@ -137,7 +137,7 @@ Singleton {
         stdout: StdioCollector {
             onStreamFinished: {
                 const [usage, used, total] = text.trim().split(",").map(Number);
-                if (isNaN(usage)) {
+                if (isNaN(total)) {
                     root.gpuUsage = 0;
                     root.gpuMemoryUsed = 0;
                     return;
