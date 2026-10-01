@@ -43,6 +43,7 @@ hl.window_rule({
     keep_aspect_ratio = true,
     move = { "(monitor_w*0.73)", "(monitor_h*0.72)" },
     size = { "(monitor_w*0.25)", "(monitor_h*0.25)" },
+    no_screen_share = true,
 })
 
 hl.window_rule({ match = { title = ".*\\.exe" }, immediate = true })
@@ -93,7 +94,8 @@ hl.layer_rule({ match = { namespace = "quickshell:popup" }, xray = false, ignore
 hl.layer_rule({ match = { namespace = "quickshell:mediaControls" }, ignore_alpha = 1 })
 -- The overlay stays out of screen capture: a black box without the overlay's
 -- Hyprland plugin, nothing at all with it. The plugin is built from the
--- overlay repository and must match this Hyprland build.
+-- overlay repository and must match this Hyprland build. It hides the
+-- Picture-in-Picture window above the same way.
 hl.layer_rule({ match = { namespace = "overlay:.*" }, no_screen_share = true })
 local overlay_hide = os.getenv("HOME") .. "/.local/lib/hyprland/overlay-hide.so"
 local plugin = io.open(overlay_hide)
