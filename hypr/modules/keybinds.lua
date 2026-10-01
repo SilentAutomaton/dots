@@ -60,14 +60,14 @@ hl.bind("SUPER + SHIFT + M", exec("wpctl set-mute @DEFAULT_SINK@ toggle"), { loc
 hl.bind("XF86AudioMicMute", exec("wpctl set-mute @DEFAULT_SOURCE@ toggle"), { locked = true })
 hl.bind("SUPER + ALT + M", exec("wpctl set-mute @DEFAULT_SOURCE@ toggle"), { locked = true })
 
--- Media: playerctl drives the focused player, Super on the media keys drives MPD.
-hl.bind("XF86AudioPlay", exec("playerctl play-pause"), { locked = true })
-hl.bind("XF86AudioPause", exec("playerctl play-pause"), { locked = true })
-hl.bind("XF86AudioNext", exec("playerctl next"), { locked = true })
-hl.bind("XF86AudioPrev", exec("playerctl previous"), { locked = true })
-hl.bind("SUPER + SHIFT + P", exec("playerctl play-pause"), { locked = true })
-hl.bind("SUPER + Period", exec("playerctl next"), { locked = true })
-hl.bind("SUPER + Comma", exec("playerctl previous"), { locked = true })
+-- Media: the shell drives the player that last changed state, Super on the media keys drives MPD.
+hl.bind("XF86AudioPlay", exec("qs -c shell ipc call mpris playPause || playerctl play-pause"), { locked = true })
+hl.bind("XF86AudioPause", exec("qs -c shell ipc call mpris playPause || playerctl play-pause"), { locked = true })
+hl.bind("XF86AudioNext", exec("qs -c shell ipc call mpris next || playerctl next"), { locked = true })
+hl.bind("XF86AudioPrev", exec("qs -c shell ipc call mpris previous || playerctl previous"), { locked = true })
+hl.bind("SUPER + SHIFT + P", exec("qs -c shell ipc call mpris playPause || playerctl play-pause"), { locked = true })
+hl.bind("SUPER + Period", exec("qs -c shell ipc call mpris next || playerctl next"), { locked = true })
+hl.bind("SUPER + Comma", exec("qs -c shell ipc call mpris previous || playerctl previous"), { locked = true })
 hl.bind("SUPER + XF86AudioPlay", exec("mpc toggle"), { locked = true })
 hl.bind("SUPER + XF86AudioNext", exec("mpc next"), { locked = true })
 hl.bind("SUPER + XF86AudioPrev", exec("mpc prev"), { locked = true })
