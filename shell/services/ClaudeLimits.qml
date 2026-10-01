@@ -97,10 +97,14 @@ Singleton {
     Process {
         id: fetcher
         // The token goes to curl through a pipe, so it never shows up in the process list.
-        command: ["bash", "-c", "C=\"${CLAUDE_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/claude}/.credentials.json\" && "
-            + "jq -r .claudeAiOauth.subscriptionType \"$C\" && "
-            + "jq -r '\"Authorization: Bearer \" + .claudeAiOauth.accessToken' \"$C\" | "
-            + "curl -s -w '\\n%{http_code}' -H @- -H 'anthropic-beta: oauth-2025-04-20' https://api.anthropic.com/api/oauth/usage"]
+        // An expired token is refreshed by Claude Code itself, then the request runs once more.
+        command: ["bash", "-c", "C=\"${CLAUDE_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/claude}/.credentials.json\"; "
+            + "get() { jq -r '\"Authorization: Bearer \" + .claudeAiOauth.accessToken' \"$C\" | "
+            + "curl -s -w '\\n%{http_code}' -H @- -H 'anthropic-beta: oauth-2025-04-20' \"https://api.anthropic.com/api/oauth/$1\"; }; "
+            + "U=$(get usage); "
+            + "[ \"${U##*$'\\n'}\" = 401 ] && claude auth status >/dev/null 2>&1 && U=$(get usage); "
+            + "P=$(get profile | sed '$d' | jq -r '.organization.organization_type // \"\" | sub(\"^claude_\"; \"\")' 2>/dev/null); "
+            + "printf '%s\\n%s' \"$P\" \"$U\""]
         stdout: StdioCollector {
             onStreamFinished: {
                 root.loading = false;
