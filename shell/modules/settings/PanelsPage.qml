@@ -234,12 +234,26 @@ SettingsPage {
             text: "Firewall prompt defaults"
         }
         ConfigSelectionArray {
-            options: FirewallPrompts.actions
+            options: [
+                { "displayName": "Allow", "icon": "check", "value": "allow" },
+                { "displayName": "Deny", "icon": "block", "value": "deny" },
+                { "displayName": "Reject", "icon": "close", "value": "reject" },
+            ]
             currentValue: Config.options.firewallPrompts.defaultAction
             onSelected: value => Config.options.firewallPrompts.defaultAction = value
         }
         ConfigSelectionArray {
-            options: FirewallPrompts.durations
+            options: [
+                { "displayName": "Once", "value": "once" },
+                { "displayName": "30 seconds", "value": "30s" },
+                { "displayName": "5 minutes", "value": "5m" },
+                { "displayName": "15 minutes", "value": "15m" },
+                { "displayName": "30 minutes", "value": "30m" },
+                { "displayName": "1 hour", "value": "1h" },
+                { "displayName": "12 hours", "value": "12h" },
+                { "displayName": "Until restart", "value": "until restart" },
+                { "displayName": "Always", "value": "always" },
+            ]
             currentValue: Config.options.firewallPrompts.defaultDuration
             onSelected: value => Config.options.firewallPrompts.defaultDuration = value
         }

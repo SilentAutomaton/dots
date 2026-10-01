@@ -27,12 +27,7 @@ Singleton {
     property bool wallpaperSelectorOpen: false
     property bool workspaceShowNumbers: false
 
-    onSidebarRightOpenChanged: {
-        if (GlobalStates.sidebarRightOpen) {
-            Notifications.timeoutAll();
-            Notifications.markAllRead();
-        }
-    }
+    onSidebarRightOpenChanged: Notifications.setSidebarOpen(GlobalStates.sidebarRightOpen)
 
     GlobalShortcut {
         name: "workspaceNumber"

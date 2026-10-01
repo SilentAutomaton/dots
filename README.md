@@ -8,6 +8,7 @@ Hyprland, a Quickshell shell and the tools around them, themed from one palette.
 |---|---|
 | `hypr/` | `~/.config/hypr` |
 | `shell/` | `~/.config/quickshell/shell` |
+| `modular_overlay/` | its own repository, see its README |
 | `kitty/ foot/ fuzzel/ wlogout/ tmux/ yazi/ glow/ nvim/ btop/ mpv/ fontconfig/ gtk-3.0/ gtk-4.0/` | `~/.config/<same name>` |
 | `zsh/environment.d/` | `~/.config/environment.d` |
 | `zsh/.zshrc`, `zsh/.zshenv`, `zsh/.sh/` | `~/.zshrc`, `~/.zshenv`, `~/.sh` |
@@ -92,7 +93,12 @@ sees the old file deleted, and it removes the rule from disk.
 
 ## Firewall and sudo prompts
 
-`bin/snitch-prompt` takes the daemon's socket, `/tmp/osui.sock`, and relays
+The prompts, the notification popups and the Discord overlay live in the
+overlay, `modular_overlay/`, a separate repository with its own install steps.
+The shell keeps the notification history in its sidebar and reads it from the
+overlay.
+
+`snitch-prompt` takes the daemon's socket, `/tmp/osui.sock`, and relays
 everything except the connection prompts to opensnitch-ui, which listens on
 `$XDG_RUNTIME_DIR/opensnitch-gui.sock` instead. The prompts become cards above
 the notifications: they take no keyboard focus, have no countdown, and open
@@ -105,12 +111,12 @@ the answer comes in time. After that it is denied once, the card stays, and the
 answer becomes a rule for the next attempt. While a connection waits, the
 daemon denies other unknown connections without asking.
 
-`bin/shell-askpass` asks for sudo passwords in the same place and shows the
+`shell-askpass` asks for sudo passwords in the same place and shows the
 whole command. It takes the context and the danger check from
-`/usr/local/bin/claude-askpass` and hands over to it when the shell is not
+`/usr/local/bin/claude-askpass` and hands over to it when the overlay is not
 running.
 
-`bin/orca-watch` reads OrcaSlicer's printer error dialogs over AT-SPI and shows
+`orca-watch` reads OrcaSlicer's printer error dialogs over AT-SPI and shows
 them as cards in the same place, with the dialog's buttons. Orca draws these
 buttons itself and gives them no names, so the labels come from their order in
 OrcaSlicer 2.4.2; a new Orca version can shift them. A card button focuses the
@@ -118,11 +124,6 @@ real button and sends it Return. OrcaSlicer's desktop notifications become
 cards too. A window rule opens the dialogs titled Error, Warning, Info or
 Unknown on the hidden `special:orca` workspace without focus; Show on the card
 brings the dialog to the current workspace.
-
-```
-install -m 755 bin/snitch-prompt bin/orca-watch ~/.local/bin/
-sudo -A install -m 755 bin/shell-askpass /usr/local/bin/
-```
 
 `opensnitch/rules/allow-steam-games.json` lets every game and Proton build in
 both Steam libraries out without a prompt.
@@ -210,17 +211,11 @@ in its config the rain takes the palette colours from `theme.toml`.
 | Print, Super+Print, Super+Shift+Print | Screen, region, Hermes |
 | Super+L, Super+Shift+L | Lock, suspend |
 | Super+Escape, Ctrl+Alt+Delete | Session menu |
-| Ctrl+Super+R | Restart the shell |
+| Super+` | Overlay interactive mode |
+| Ctrl+Super+R | Restart the shell and the overlay |
 | Ctrl+Alt+B | Toggle the bar |
 | Ctrl+Shift+Escape | btop |
 | Super+1…0, Super+Shift+1…0 | Go to, send to workspace |
 | Super+S, Super+Alt+S | Scratchpad, send to scratchpad |
 | Super+arrows, Super+Shift+arrows | Focus, move window |
 | Super+; and Super+' | Split ratio |
-
-## Discord overlay
-
-`applications/discord-AM.desktop` shadows the AM launcher of the same name and
-starts Discord through `discord-with-overlay`, from the discord_overlay
-repository. `Shift + grave` in `hypr/modules/keybinds.lua` toggles its
-interactive mode.

@@ -37,7 +37,7 @@ hl.bind("SUPER + W", shell("wallpaperSelectorToggle"))
 hl.bind("SUPER + Escape", shell("sessionToggle"))
 hl.bind("CTRL + ALT + Delete", shell("sessionToggle"))
 hl.bind("CTRL + ALT + B", shell("barToggle"))
-hl.bind("CTRL + SUPER + R", exec("killall qs quickshell; qs -c shell &"))
+hl.bind("CTRL + SUPER + R", exec("killall qs quickshell; qs -c shell & qs -c overlay &"))
 hl.bind("SUPER + I", exec("qs -p $HOME/.config/quickshell/shell/settings.qml"))
 
 -- Screen capture
@@ -126,5 +126,5 @@ hl.bind("SUPER + T", exec("/usr/local/bin/telegram"))
 hl.bind("SUPER + J", exec("obsidian"))
 hl.bind("CTRL + SHIFT + Escape", exec("kitty -1 btop"))
 
--- Discord overlay, by keycode for the Russian layout
-hl.bind("SUPER + code:49", exec("discord-overlay toggle"))
+-- Overlay interactive mode (Super+`), by keycode for the Russian layout
+hl.bind("SUPER + code:49", shell("overlayToggle"))

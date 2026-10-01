@@ -16,3 +16,6 @@
 /gtk-3.0/bookmarks
 /gtk-4.0/servers
 /btop/btop.log
+
+# A repository of its own
+/modular_overlay/

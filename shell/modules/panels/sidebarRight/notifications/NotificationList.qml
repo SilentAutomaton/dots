@@ -9,19 +9,11 @@ import QtQuick.Layouts
 Item {
     id: root
 
-    PromptList {
-        id: promptList
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.top: parent.top
-    }
-
     NotificationListView { // Scrollable window
         id: listview
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.top: promptList.visible ? promptList.bottom : parent.top
-        anchors.topMargin: promptList.visible ? 6 : 0
+        anchors.top: parent.top
         anchors.bottom: statusRow.top
         anchors.bottomMargin: 5
 
@@ -40,7 +32,7 @@ Item {
 
     // Placeholder when list is empty
     PagePlaceholder {
-        shown: Notifications.list.length === 0 && !promptList.visible
+        shown: Notifications.list.length === 0
         icon: "notifications_active"
         description: "Nothing"
         shape: MaterialShape.Shape.Ghostish

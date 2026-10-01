@@ -52,7 +52,7 @@ hl.window_rule({
     match = { class = "^jetbrains-.*$", float = true, title = "^$|^\\s$|^win\\d+$" },
     no_initial_focus = true,
 })
--- OrcaSlicer's printer error dialogs wait on a hidden workspace; orca-watch
+-- OrcaSlicer's printer error dialogs wait on a hidden workspace; the overlay
 -- shows them as cards.
 hl.window_rule({
     match = { class = "^(orca-slicer)$", title = "^(Error|Warning|Info|Unknown)$" },
@@ -80,7 +80,6 @@ for namespace, animation in pairs({
     sidebarLeft = "slide left",
     sidebarRight = "slide right",
     wallpaperSelector = "slide top",
-    notificationPopup = "fade",
     screenCorners = "popin 120%",
 }) do
     hl.layer_rule({ match = { namespace = "quickshell:" .. namespace }, animation = animation })
@@ -92,3 +91,15 @@ for _, namespace in ipairs({
 end
 hl.layer_rule({ match = { namespace = "quickshell:popup" }, xray = false, ignore_alpha = 1 })
 hl.layer_rule({ match = { namespace = "quickshell:mediaControls" }, ignore_alpha = 1 })
+-- The overlay stays out of screen capture: a black box without the overlay's
+-- Hyprland plugin, nothing at all with it. The plugin is built from the
+-- overlay repository and must match this Hyprland build.
+hl.layer_rule({ match = { namespace = "overlay:.*" }, no_screen_share = true })
+local overlay_hide = os.getenv("HOME") .. "/.local/lib/hyprland/overlay-hide.so"
+local plugin = io.open(overlay_hide)
+if plugin then
+    plugin:close()
+    hl.plugin.load(overlay_hide)
+end
+hl.layer_rule({ match = { namespace = "overlay:stack" }, animation = "fade" })
+hl.layer_rule({ match = { namespace = "overlay:details" }, no_anim = true })
