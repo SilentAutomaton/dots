@@ -47,5 +47,8 @@ vim.pack.add({
 for _, module in ipairs({
   "editing", "picker", "completion", "lsp", "format", "treesitter", "git", "agent", "markdown",
 }) do
-  require("plugins." .. module)
+  -- The commit message editor that the git hook opens must not register a second IDE server.
+  if not (module == "agent" and vim.env.NVIM_COMMIT_REVIEW == "1") then
+    require("plugins." .. module)
+  end
 end
