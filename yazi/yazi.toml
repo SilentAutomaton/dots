@@ -25,7 +25,8 @@ edit = [
   { run = '${EDITOR:-nvim} %s', desc = "$EDITOR", block = true, for = "unix" },
 ]
 open = [
-  { run = 'xdg-open %s', desc = "Open", orphan = true, for = "linux" },
+  # xdg-open takes one path, so each selected file gets its own call
+  { run = 'for f in %s; do xdg-open "$f"; done', desc = "Open", orphan = true, for = "linux" },
 ]
 reveal = [
   { run = 'nautilus %d1', desc = "Reveal in Nautilus", orphan = true, for = "linux" },
