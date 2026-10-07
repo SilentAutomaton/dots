@@ -81,6 +81,13 @@ vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
   command = "silent! checktime",
 })
 
+vim.api.nvim_create_autocmd("FileChangedShellPost", {
+  group = group,
+  callback = function(event)
+    vim.notify("updated outside nvim: " .. vim.fn.fnamemodify(event.file, ":."))
+  end,
+})
+
 vim.api.nvim_create_autocmd("TextYankPost", {
   group = group,
   callback = function()

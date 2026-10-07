@@ -1,37 +1,44 @@
-local function fzf(command, opts)
-  return function()
-    require("fzf-lua")[command](opts)
-  end
-end
+local M = {}
 
-return {
-  {
-    "ibhagwan/fzf-lua",
-    cmd = "FzfLua",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-    keys = {
-      { "<leader><space>", fzf("files"), desc = "Find files" },
-      { "<leader>/", fzf("live_grep"), desc = "Grep" },
-      { "<leader>,", fzf("buffers"), desc = "Buffers" },
-      { "<leader>:", fzf("command_history"), desc = "Command history" },
-      { "<leader>ff", fzf("files"), desc = "Files" },
-      { "<leader>fg", fzf("git_files"), desc = "Git files" },
-      { "<leader>fr", fzf("oldfiles", { cwd_only = true }), desc = "Recent files" },
-      { "<leader>fb", fzf("buffers"), desc = "Buffers" },
-      { "<leader>sg", fzf("live_grep"), desc = "Grep" },
-      { "<leader>sw", fzf("grep_cword"), desc = "Word under cursor" },
-      { "<leader>sw", fzf("grep_visual"), mode = "x", desc = "Selection" },
-      { "<leader>sb", fzf("lgrep_curbuf"), desc = "Buffer lines" },
-      { "<leader>sd", fzf("diagnostics_workspace"), desc = "Diagnostics" },
-      { "<leader>ss", fzf("lsp_document_symbols"), desc = "Symbols" },
-      { "<leader>sk", fzf("keymaps"), desc = "Keymaps" },
-      { "<leader>sh", fzf("helptags"), desc = "Help" },
-      { "<leader>sR", fzf("resume"), desc = "Resume last search" },
-      { "<leader>st", fzf("grep", { search = "TODO" .. "(review)", no_esc = false }), desc = "Review marks" },
-    },
-    opts = {
+local ready = false
+
+-- fzf-lua costs about 20 ms at start, so it is set up on the first picker call.
+function M.load()
+  if not ready then
+    ready = true
+    local fzf = require("fzf-lua")
+    fzf.setup({
       winopts = { border = "rounded", backdrop = 100, preview = { border = "rounded" } },
       fzf_colors = true,
-    },
-  },
-}
+    })
+    -- The git menu uses vim.ui.select.
+    fzf.register_ui_select()
+  end
+  return require("fzf-lua")
+end
+
+local function map(lhs, command, desc, opts, mode)
+  vim.keymap.set(mode or "n", lhs, function()
+    M.load()[command](opts)
+  end, { desc = desc })
+end
+
+map("<leader><space>", "files", "Find files")
+map("<leader>/", "live_grep", "Grep")
+map("<leader>,", "buffers", "Buffers")
+map("<leader>:", "command_history", "Command history")
+map("<leader>ff", "files", "Files")
+map("<leader>fg", "git_files", "Git files")
+map("<leader>fr", "oldfiles", "Recent files", { cwd_only = true })
+map("<leader>fb", "buffers", "Buffers")
+map("<leader>sg", "live_grep", "Grep")
+map("<leader>sw", "grep_cword", "Word under cursor")
+map("<leader>sw", "grep_visual", "Selection", nil, "x")
+map("<leader>sb", "lgrep_curbuf", "Buffer lines")
+map("<leader>sd", "diagnostics_workspace", "Diagnostics")
+map("<leader>ss", "lsp_document_symbols", "Symbols")
+map("<leader>sk", "keymaps", "Keymaps")
+map("<leader>sh", "helptags", "Help")
+map("<leader>sR", "resume", "Resume last search")
+
+return M

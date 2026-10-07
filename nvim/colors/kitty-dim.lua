@@ -186,8 +186,6 @@ local groups = {
   fugitiveStagedHeading = { fg = c.add_sign, bold = true },
   fugitiveUnstagedHeading = { fg = c.change_sign, bold = true },
   fugitiveUntrackedHeading = { fg = c.comment, bold = true },
-  DiffviewFilePanelTitle = { fg = c.blue, bold = true },
-  DiffviewFilePanelCounter = { fg = c.fg_dim },
 
   BlinkCmpMenu = { link = "Pmenu" },
   BlinkCmpMenuBorder = { fg = c.border },

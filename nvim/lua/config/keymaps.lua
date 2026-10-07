@@ -33,7 +33,13 @@ map("n", "<leader>xl", function()
 end, { desc = "Toggle location list" })
 
 map("n", "<leader>qq", "<Cmd>qa<CR>", { desc = "Quit all" })
-map("n", "<leader>l", "<Cmd>Lazy<CR>", { desc = "Plugins" })
+map("n", "<leader>l", function()
+  vim.pack.update()
+end, { desc = "Update plugins" })
+map("n", "<leader>u", function()
+  vim.cmd.packadd("nvim.undotree")
+  vim.cmd("Undotree")
+end, { desc = "Undo tree" })
 map("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Leave terminal mode" })
 
 map("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
@@ -87,3 +93,42 @@ map("x", "<leader>yp", function()
   vim.api.nvim_feedkeys(vim.keycode("<Esc>"), "n", false)
   vim.notify(location)
 end, { desc = "Copy path:lines with code" })
+
+local runners = { python = "python3", go = "go run", lua = "nvim -l", sh = "bash", bash = "bash" }
+
+map("n", "<leader>r", function()
+  local filetype = vim.bo.filetype
+  if vim.bo.buftype ~= "" or not (runners[filetype] or filetype == "c") then
+    vim.notify("No runner for this file type.")
+    return
+  end
+  vim.cmd("silent update")
+  local file = vim.fn.shellescape(vim.fn.expand("%:p"))
+  local command = runners[filetype] and (runners[filetype] .. " " .. file)
+    or ("cc -o /tmp/nvim-run-c %s && /tmp/nvim-run-c"):format(file)
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    if vim.w[win].run_output then
+      vim.api.nvim_win_close(win, true)
+    end
+  end
+  vim.cmd("botright 12new")
+  vim.w.run_output = true
+  vim.fn.jobstart({ "sh", "-c", command }, { term = true })
+  vim.keymap.set("n", "q", "<Cmd>close<CR>", { buffer = true, desc = "Close output" })
+end, { desc = "Run file" })
+
+-- A shortcut sheet in its own tab, rendered by glow like the markdown preview.
+map("n", "<F1>", function()
+  vim.cmd("tabnew")
+  local buf = vim.api.nvim_get_current_buf()
+  local width = vim.api.nvim_win_get_width(0) - 2
+  local channel = vim.api.nvim_open_term(buf, {})
+  vim.system(
+    { "glow", "-s", "dark", "-w", tostring(width), vim.fn.stdpath("config") .. "/cheatsheet.md" },
+    { env = { CLICOLOR_FORCE = "1" }, text = true },
+    vim.schedule_wrap(function(result)
+      vim.api.nvim_chan_send(channel, (result.stdout ~= "" and result.stdout or result.stderr):gsub("\n", "\r\n"))
+    end)
+  )
+  vim.keymap.set("n", "q", "<Cmd>tabclose<CR>", { buffer = buf, desc = "Close cheat sheet" })
+end, { desc = "Shortcut cheat sheet" })
