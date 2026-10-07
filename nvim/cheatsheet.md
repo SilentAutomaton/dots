@@ -1,64 +1,77 @@
-# nvim: шпаргалка
+# nvim cheat sheet
 
-Закрыть вкладку - `q`. Подсказка по любой клавише - пробел и пауза. Статья: Проекты/desktop/nvim-config.
+Close this tab with `q`. For any key group, press Space and wait: which-key lists what follows. Full article: Obsidian, Projects/desktop/nvim-config.
 
-## Смотреть, что сделал агент
+## How to read the keys
 
-| Клавиши | Что делает |
+| Written | Means |
 |---|---|
-| `<leader>gd` | правки в дереве, а если их нет - последний коммит |
-| `<leader>gh` `<leader>gw` | последний коммит, незакоммиченные правки |
-| `<leader>gD` | вся ветка против базовой |
-| `<leader>gg` | меню git по словам |
+| `<leader>` | the Space key. `<leader>gd` is Space, then `g`, then `d`, one after another |
+| `<C-s>` | Ctrl and `s` held together. `<C-Space>` is Ctrl+Space |
+| `<A-x>`, `<M-x>` | Alt and `x` held together |
+| `<S-Tab>` | Shift and Tab held together. A capital letter (`G`, `C`) is Shift and that letter |
+| `<CR>`, `<Esc>`, `<Tab>`, `<BS>` | Enter, Escape, Tab, Backspace |
+| `<F1>` | the F1 function key |
+| `]h`, `gd`, `grr` | plain keys pressed in a row, not together |
+| `n`, `x`, `i` | normal, visual and insert mode, when a row names one |
+
+## See what the agent did
+
+| Keys | Action |
+|---|---|
+| `<leader>gd` | uncommitted changes, or the last commit when there are none |
+| `<leader>gh` `<leader>gw` | the last commit, the uncommitted changes |
+| `<leader>gD` | the whole branch against its base |
+| `<leader>gg` | git menu with plain words |
 | `<leader>gG` | lazygit |
-| `<leader>gf` `<leader>gl` | история файла, лог репозитория |
-| `]h` `[h` | следующий, предыдущий кусок в файле |
-| `<leader>hp` | показать кусок |
+| `<leader>gf` `<leader>gl` | history of this file, log of the repository |
+| `]h` `[h` | next, previous hunk in the file |
+| `<leader>hp` | preview the hunk |
 
-## В окне дифа
+## Inside the diff view
 
-| Клавиши | Что делает |
+| Keys | Action |
 |---|---|
-| `<Tab>` `<S-Tab>` | следующий, предыдущий файл |
-| `-` | stage или unstage файла |
-| `<leader>hs` `<leader>hu` `<leader>hr` | stage, unstage, откат куска |
-| `i` | замечание на строке (в visual - на выделении) |
-| `C` | скопировать замечания в буфер для агента |
-| `q` | закрыть, замечания уходят в буфер и архив |
+| `<Tab>` `<S-Tab>` | next, previous file |
+| `-` | stage or unstage the file |
+| `<leader>hs` `<leader>hu` `<leader>hr` | stage, unstage, discard the hunk |
+| `i` | comment on the line (in visual mode, on the selection) |
+| `C` | copy the comments to the clipboard for the agent |
+| `q` | close; the comments go to the clipboard and the archive |
 
-## Коммиты
+## Commits
 
-| Клавиши | Что делает |
+| Keys | Action |
 |---|---|
-| `<leader>gs` | статус: `cw` переписать сообщение последнего коммита, `rw` выбранного |
-| `<leader>gc` | коммит |
-| `<leader>tc` | окно правки сообщений агента, включить или выключить |
+| `<leader>gs` | status; there `cw` rewrites the last commit message, `rw` the one under the cursor |
+| `<leader>gc` | commit |
+| `<leader>tc` | the message popup for agent commits, on or off |
 
-## Агент
+## Agent
 
-| Клавиши | Что делает |
+| Keys | Action |
 |---|---|
-| `<leader>as` | отправить выделение агенту |
-| `<leader>ab` | добавить файл агенту |
-| `<leader>yp` | скопировать путь и код для вставки |
+| `<leader>as` | send the selection to the agent |
+| `<leader>ab` | add this file to the agent |
+| `<leader>yp` | copy path and code, ready to paste |
 
-## Файлы и поиск
+## Files and search
 
-| Клавиши | Что делает |
+| Keys | Action |
 |---|---|
-| `<leader><space>` | найти файл |
-| `<leader>/` | поиск текста по проекту |
-| `<leader>,` | открытые буферы |
-| `<leader>sk` | поиск по всем клавишам |
-| `<leader>r` | запустить текущий файл |
-| `<leader>u` | дерево отмен |
+| `<leader><space>` | find a file |
+| `<leader>/` | search text in the project |
+| `<leader>,` | open buffers |
+| `<leader>sk` | search all key bindings |
+| `<leader>r` | run the current file |
+| `<leader>u` | undo tree |
 
-## Код
+## Code
 
-| Клавиши | Что делает |
+| Keys | Action |
 |---|---|
-| `gd` `grr` `grn` | определение, ссылки, переименовать |
-| `gra` `K` | действия с кодом, документация |
-| `<leader>cf` | форматировать |
-| `]d` `[d` | следующая, предыдущая диагностика |
-| `<C-s>` | сохранить |
+| `gd` `grr` `grn` | definition, references, rename |
+| `gra` `K` | code actions, documentation |
+| `<leader>cf` | format |
+| `]d` `[d` | next, previous diagnostic |
+| `<C-s>` | save |

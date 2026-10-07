@@ -1,64 +1,76 @@
-# yazi: шпаргалка
+# yazi cheat sheet
 
-Закрыть эту вкладку - `<C-c>`. Полный список - `~`. Статья: Проекты/desktop/yazi-config.
+Close this tab with `<C-c>`. The full list of keys is on `~`. Article: Obsidian, Projects/desktop/yazi-config.
 
-## Ходить
+## How to read the keys
 
-| Клавиши | Что делает |
+| Written | Means |
 |---|---|
-| `h` `j` `k` `l` | выше, вниз, вверх, войти. `Enter` тоже входит или открывает файл |
-| `;` затем буква | закладка: `h` дом, `p` проекты, `c` конфиги, `d` загрузки, `D` документы, `u` флешки |
-| `'` | поиск по закладкам |
-| `f` затем буква | прыжок к файлу по первой букве |
-| `F` | живой фильтр |
-| `/` | поиск, `n` и `N` следующий и предыдущий |
-| `gr` | корень git-репозитория |
-| `gh` `gc` | домой, в ~/.config |
+| `<C-c>` | Ctrl and `c` held together |
+| `<A-y>` | Alt and `y` held together |
+| `Space`, `Enter`, `Tab`, `Esc` | the keys with those names |
+| `F`, `T`, `D`, `P` | a capital letter: Shift and that letter |
+| `yy`, `gr`, `Mm`, `Ps` | two keys pressed one after another, not together |
+| `;` then a letter | open the bookmark menu, then press the letter |
+| `` `` `` | the backtick key twice |
 
-## Вкладки и вид
+## Move around
 
-| Клавиши | Что делает |
+| Keys | Action |
 |---|---|
-| `tt` | новая вкладка в этой папке |
-| `1`..`9`, `[` `]` | переключить вкладку |
-| `<C-c>` | закрыть вкладку |
-| `T` | превью на весь экран, повтор возвращает |
-| `<C-t>` | скрыть или показать превью |
-| `+` `-` | масштаб превью |
-| `<C-e>` `<C-y>` | прокрутить превью |
-| `.` | скрытые файлы |
+| `h` `j` `k` `l` | parent folder, down, up, enter. `Enter` also enters or opens |
+| `;` then a letter | bookmark: `p` projects, `d` downloads, `D` documents, `c` config, `u` USB drives |
+| `'` | search the bookmarks |
+| `f` then a letter | jump to a file by its first letter |
+| `F` | live filter |
+| `/` | search; `n` and `N` for next and previous match |
+| `gr` | root of the git repository |
+| `gh` `gc` | home, ~/.config |
 
-## Работать с файлами
+## Tabs and view
 
-| Клавиши | Что делает |
+| Keys | Action |
 |---|---|
-| `Space` | выделить. `v` режим выделения, `<C-a>` выделить всё |
-| `yy` `x` `p` | копировать, вырезать, вставить (в папку под курсором) |
-| `Pf` | вставить с заменой |
-| `d` | в корзину, `D` насовсем, `u` вернуть из корзины |
-| `a` `r` | создать (папка - с `/` на конце), переименовать |
-| `ca` `cx` `cm` | сжать, распаковать, права |
-| `yc` | скопировать содержимое файла |
-| `<A-y>` | скопировать сами файлы в буфер Wayland |
-| `gd` | сравнить выделенный и подсвеченный файлы |
-| `Rp` `Rr` `Rd` | то же от sudo: вставить, переименовать, удалить |
+| `tt` | new tab in this folder |
+| `1`..`9`, `[` `]` | switch tab |
+| `<C-c>` | close the tab |
+| `T` | preview on the whole screen; again to go back |
+| `<C-t>` | hide or show the preview |
+| `+` `-` | zoom the preview |
+| `<C-e>` `<C-y>` | scroll the preview |
+| `.` | hidden files |
 
-## Перетаскивание и диски
+## Work with files
 
-| Клавиши | Что делает |
+| Keys | Action |
 |---|---|
-| `<C-n>` | вынести выделенное в другое окно. Появится маленькое окно, тяните из него |
-| `gn` | принять файлы, брошенные из другого окна, в эту папку |
-| `Mm` `Mu` `MU` | смонтировать, отмонтировать, извлечь устройство |
-| `gm` | перейти на смонтированное |
-| `` `` `` | вернуться с устройства |
+| `Space` | select. `v` is selection mode, `<C-a>` selects all |
+| `yy` `x` `p` | copy, cut, paste (into the folder under the cursor) |
+| `Pf` | paste and overwrite |
+| `d` | to the trash; `D` deletes for good; `u` restores from the trash |
+| `a` `r` | create (end the name with `/` for a folder), rename |
+| `ca` `cx` `cm` | compress, extract, change permissions |
+| `yc` | copy the contents of the file |
+| `<A-y>` | copy the files themselves to the Wayland clipboard |
+| `gd` | compare the selected file with the hovered one |
+| `Rp` `Rr` `Rd` | the same as root: paste, rename, delete |
 
-## Прочее
+## Drag and drop, disks
 
-| Клавиши | Что делает |
+| Keys | Action |
 |---|---|
-| `:` | палитра команд |
-| `gi` | lazygit здесь |
-| `!` `#` | команда оболочки, вторая ждёт окончания |
-| `Ps` `Pl` `PP` | сохранить, загрузить, вернуть последний проект |
-| `q` | выйти |
+| `<C-n>` | drag the selection out to another window. A small window appears; drag from it |
+| `gn` | take files dropped from another window into this folder |
+| `Mm` `Mu` `MU` | mount, unmount, eject a device |
+| `gm` | jump to a mounted device |
+| `` `` `` | jump back from the device |
+
+## Other
+
+| Keys | Action |
+|---|---|
+| `:` | command palette |
+| `gi` | lazygit here |
+| `!` `#` | shell command; the second waits for it to finish |
+| `Ps` `Pl` `PP` | save, load, reload the last project |
+| `q` | quit |

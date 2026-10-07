@@ -1,0 +1,8 @@
+HOW TO READ THE KEYS
+  C-x      Ctrl and x held together          C-Space  the prefix: Ctrl+Space
+  M-x      Alt and x held together           M-Left   Alt and the left arrow
+  C-M-x    Ctrl, Alt and x held together     Space    the space bar
+  Shift    a capital letter is Shift and the letter; Alt+Shift switches the keyboard layout, so no Alt bindings use it
+  Alt-bindings need no prefix. Letters also work on the Russian layout, on the same physical key.
+
+ALT BINDINGS (q closes this list)
