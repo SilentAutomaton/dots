@@ -1,0 +1,13 @@
+#!/bin/sh
+# global secret scan; skip with GITLEAKS_SKIP=1
+if [ "$GITLEAKS_SKIP" != "1" ] && command -v gitleaks >/dev/null 2>&1; then
+	gitleaks git --staged --no-banner --redact || {
+		echo "gitleaks: staged changes contain secrets — commit blocked (GITLEAKS_SKIP=1 to override)" >&2
+		exit 1
+	}
+fi
+# chain to repo-local hook so husky/lefthook still run
+local_hook="$(git rev-parse --git-common-dir 2>/dev/null)/hooks/pre-commit"
+if [ -n "$local_hook" ] && [ -x "$local_hook" ]; then
+	exec "$local_hook" "$@"
+fi

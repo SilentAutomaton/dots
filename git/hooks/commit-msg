@@ -1,0 +1,43 @@
+#!/bin/sh
+# Opens the agent's commit message in a new tmux window for editing before the commit.
+# Off switch: touch ~/.local/state/commit-review-off (nvim <leader>tc toggles it).
+flag="${XDG_STATE_HOME:-$HOME/.local/state}/commit-review-off"
+wait_seconds=100
+
+if [ "$CLAUDECODE" = "1" ] && [ -n "$TMUX" ] && [ -n "$TMUX_PANE" ] && [ ! -e "$flag" ] && command -v tmux >/dev/null 2>&1; then
+	msg="$(realpath "$1")"
+	ok="$msg.reviewed"
+	rm -f "$ok"
+	session="$(tmux display-message -p -t "$TMUX_PANE" '#{session_id}')"
+	window="$(tmux new-window -P -F '#{window_id}' -t "$session:" -n commit -c "$(git rev-parse --show-toplevel)" \
+		-e "MSG=$msg" -e "OK=$ok" 'nvim --clean -c "set ft=gitcommit" "$MSG" && touch "$OK"')"
+	echo "commit message is open for the user in tmux window $window; waiting up to ${wait_seconds}s" >&2
+
+	waited=0
+	while [ ! -e "$ok" ] && tmux list-windows -t "$session" -F '#{window_id}' | grep -qx "$window"; do
+		if [ "$waited" -ge $((wait_seconds * 10 / 3)) ]; then
+			echo "commit-msg: user did not answer in ${wait_seconds}s, committing the message as written." >&2
+			break
+		fi
+		sleep 0.3
+		waited=$((waited + 1))
+	done
+
+	if [ ! -e "$ok" ] && [ "$waited" -lt $((wait_seconds * 10 / 3)) ]; then
+		echo "commit-msg: commit message rejected by the user (editor closed with :cq). Ask the user what to change." >&2
+		exit 1
+	fi
+	if [ -e "$ok" ]; then
+		rm -f "$ok"
+		if ! git stripspace --strip-comments <"$msg" | grep -q .; then
+			echo "commit-msg: commit message was emptied by the user, commit aborted." >&2
+			exit 1
+		fi
+	fi
+fi
+
+# chain to repo-local hook so husky/commitlint still run
+local_hook="$(git rev-parse --git-common-dir 2>/dev/null)/hooks/commit-msg"
+if [ -n "$local_hook" ] && [ -x "$local_hook" ]; then
+	exec "$local_hook" "$@"
+fi
