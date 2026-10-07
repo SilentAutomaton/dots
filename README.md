@@ -67,7 +67,7 @@ cp ~/.zshrc ~/.zshenv $d/zsh/ && rsync -a --exclude env.local ~/.sh/ $d/zsh/.sh/
 cp ~/.local/share/applications/discord-AM.desktop $d/applications/
 cp ~/.local/share/applications/nvim-kitty.desktop ~/.local/share/applications/yazi-here.desktop $d/applications/
 # rsync reads .gitignore without its ! exceptions, so the one hand-written yazi plugin is copied on its own
-rsync -a ~/.config/yazi/plugins/dnd.yazi/ $d/yazi/plugins/dnd.yazi/
+rsync -a ~/.config/yazi/plugins/dragon.yazi/ $d/yazi/plugins/dragon.yazi/
 cp ~/.config/mimeapps.list $d/xdg/
 cp ~/.local/share/dbus-1/services/org.freedesktop.FileManager1.service $d/dbus-1/services/
 cp ~/.local/bin/xdg-terminal-exec ~/.local/bin/filemanager1-yazi $d/bin/
@@ -209,7 +209,7 @@ The "Show in folder" button of browsers and chat apps calls the D-Bus service
 `filemanager1-yazi`, which opens yazi. Stop a running Nautilus once
 (`nautilus -q`), because it keeps that name while it lives.
 
-The `dnd.yazi` plugin starts `dragon-drop` for drag and drop out of yazi and
+The `dragon.yazi` plugin starts `dragon-drop` for drag and drop out of yazi and
 for dropping files into a folder; `hypr/modules/rules.lua` floats and pins
 its window. Super+Shift+F still opens Nautilus.
 

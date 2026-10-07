@@ -9,7 +9,7 @@
 # Installed by their plugin managers
 /tmux/plugins/
 /yazi/plugins/*
-!/yazi/plugins/dnd.yazi/
+!/yazi/plugins/dragon.yazi/
 /yazi/flavors/
 
 # Machine-local

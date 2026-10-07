@@ -60,12 +60,12 @@ desc = "Zoom out the preview"
 # Clipboard and drag & drop --------------------------------------------------
 [[mgr.prepend_keymap]]
 on   = "<C-n>"
-run  = "plugin dnd"
+run  = "plugin dragon"
 desc = "Drag the selection out to another window"
 
 [[mgr.prepend_keymap]]
 on   = [ "g", "n" ]
-run  = "plugin dnd -- in"
+run  = "plugin dragon -- in"
 desc = "Receive dropped files into this folder"
 
 # The shortcut sheet opens in its own tab; the built-in help stays on `~`
