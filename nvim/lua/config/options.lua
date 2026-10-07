@@ -88,6 +88,25 @@ vim.api.nvim_create_autocmd("FileChangedShellPost", {
   end,
 })
 
+-- The commit-msg hook lists staged files as comments, "# file | 8 ++++--"; colour the + and - runs.
+vim.api.nvim_create_autocmd("FileType", {
+  group = group,
+  pattern = "gitcommit",
+  callback = function(event)
+    local ns = vim.api.nvim_create_namespace("commit_stat")
+    for row, line in ipairs(vim.api.nvim_buf_get_lines(event.buf, 0, -1, false)) do
+      local first = line:match("^#.*|%s+%d+%s+()[+-]+$")
+      for col = first or #line + 1, #line do
+        vim.api.nvim_buf_set_extmark(event.buf, ns, row - 1, col - 1, {
+          end_col = col,
+          hl_group = line:sub(col, col) == "+" and "Added" or "Removed",
+          priority = 200,
+        })
+      end
+    end
+  end,
+})
+
 vim.api.nvim_create_autocmd("TextYankPost", {
   group = group,
   callback = function()
