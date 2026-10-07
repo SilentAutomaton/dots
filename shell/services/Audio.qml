@@ -83,7 +83,16 @@ Singleton {
     }
 
     // A new output starts with its own volume, so the protection must not compare it to the old one.
-    onSinkChanged: volumeProtection.lastReady = false
+    onSinkChanged: {
+        volumeProtection.lastReady = false;
+        sinkSettle.restart();
+    }
+
+    // A new output reports its real volume a moment after it appears (Bluetooth absolute volume, restored route).
+    Timer {
+        id: sinkSettle
+        interval: 3000
+    }
 
     Connections { // Protection against sudden volume changes
         id: volumeProtection
@@ -99,7 +108,7 @@ Singleton {
                 lastVolume = 0;
                 return;
             }
-            if (!lastReady) {
+            if (!lastReady || sinkSettle.running) {
                 lastVolume = newVolume;
                 lastReady = true;
                 return;
