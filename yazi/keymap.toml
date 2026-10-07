@@ -60,8 +60,19 @@ desc = "Zoom out the preview"
 # Clipboard and drag & drop --------------------------------------------------
 [[mgr.prepend_keymap]]
 on   = "<C-n>"
-run  = 'shell -- dragon-drop -x -i -T %s'
-desc = "Drag & drop the selection (works inside tmux)"
+run  = "plugin dnd"
+desc = "Drag the selection out to another window"
+
+[[mgr.prepend_keymap]]
+on   = [ "g", "n" ]
+run  = "plugin dnd -- in"
+desc = "Receive dropped files into this folder"
+
+# The shortcut sheet opens in its own tab; the built-in help stays on `~`
+[[mgr.prepend_keymap]]
+on   = "<F1>"
+run  = [ "tab_create ~/.config/yazi/help", "reveal ~/.config/yazi/help/cheatsheet.md", "plugin toggle-pane max-preview" ]
+desc = "Shortcut cheat sheet in a new tab"
 
 [[mgr.prepend_keymap]]
 on   = "<A-y>"

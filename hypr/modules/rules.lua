@@ -35,6 +35,23 @@ hl.window_rule({
 })
 hl.window_rule({ match = { title = "^(Copying — Dolphin)$" }, move = { 40, 80 } })
 
+-- yazi hands files to other windows through dragon-drop: keep its handle visible
+-- on every workspace, large enough to catch with the pointer.
+hl.window_rule({
+    match = { class = "^(dragon-drop)$" },
+    float = true,
+    pin = true,
+    center = true,
+    size = { "(monitor_w*0.15)", "(monitor_h*0.1)" },
+})
+-- The yazi file picker that browsers and GTK dialogs open through the portal.
+hl.window_rule({
+    match = { class = "^(yazi-picker)$" },
+    float = true,
+    center = true,
+    size = { "(monitor_w*0.7)", "(monitor_h*0.75)" },
+})
+
 local pip = "^([Pp]icture[-\\s]?[Ii]n[-\\s]?[Pp]icture)(.*)$"
 hl.window_rule({
     match = { title = pip },

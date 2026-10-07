@@ -8,7 +8,8 @@
 
 # Installed by their plugin managers
 /tmux/plugins/
-/yazi/plugins/
+/yazi/plugins/*
+!/yazi/plugins/dnd.yazi/
 /yazi/flavors/
 
 # Machine-local
