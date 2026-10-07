@@ -1,33 +1,72 @@
 #!/bin/sh
-# Opens the agent's commit message in a new tmux window for editing before the commit.
+# Opens the agent's commit message for editing before the commit: a popup over the tmux
+# client, or a window named "commit" when nobody is attached. The staged file list sits
+# under the message as comments and is cut out when the editor closes.
 # Off switch: touch ~/.local/state/commit-review-off (nvim <leader>tc toggles it).
 flag="${XDG_STATE_HOME:-$HOME/.local/state}/commit-review-off"
-wait_seconds=100
+wait_seconds="${COMMIT_REVIEW_WAIT:-100}"
+marker='# ---- Staged changes (not part of the message, removed on save) ----'
 
 if [ "$CLAUDECODE" = "1" ] && [ -n "$TMUX" ] && [ -n "$TMUX_PANE" ] && [ ! -e "$flag" ] && command -v tmux >/dev/null 2>&1; then
 	msg="$(realpath "$1")"
 	ok="$msg.reviewed"
 	rm -f "$ok"
+	top="$(git rev-parse --show-toplevel)"
 	session="$(tmux display-message -p -t "$TMUX_PANE" '#{session_id}')"
-	window="$(tmux new-window -P -F '#{window_id}' -t "$session:" -n commit -c "$(git rev-parse --show-toplevel)" \
-		-e "MSG=$msg" -e "OK=$ok" 'nvim --clean -c "set ft=gitcommit" "$MSG" && touch "$OK"')"
-	echo "commit message is open for the user in tmux window $window; waiting up to ${wait_seconds}s" >&2
+	info="$(tmux list-clients -t "$session" -F '#{client_name} #{client_width}' | head -n 1)"
+	client="${info% *}"
+	width=80
+	[ -n "$info" ] && width=$((${info##* } * 70 / 100 - 4))
 
+	{
+		printf '\n\n%s\n' "$marker"
+		git diff --cached --stat="$width" --no-color | sed 's/^/# /'
+	} >>"$msg"
+
+	editor='nvim -c "set ft=gitcommit" "$MSG" && touch "$OK"'
+	timed_out=0
 	waited=0
-	while [ ! -e "$ok" ] && tmux list-windows -t "$session" -F '#{window_id}' | grep -qx "$window"; do
-		if [ "$waited" -ge $((wait_seconds * 10 / 3)) ]; then
-			echo "commit-msg: user did not answer in ${wait_seconds}s, committing the message as written." >&2
-			break
-		fi
-		sleep 0.3
-		waited=$((waited + 1))
-	done
+	limit=$((wait_seconds * 10 / 3))
 
-	if [ ! -e "$ok" ] && [ "$waited" -lt $((wait_seconds * 10 / 3)) ]; then
+	if [ -n "$client" ]; then
+		tmux display-popup -c "$client" -E -w 70% -h 85% -d "$top" -T " commit message " \
+			-e "MSG=$msg" -e "OK=$ok" -e NVIM_COMMIT_REVIEW=1 "$editor" &
+		popup=$!
+		echo "commit message is open for the user in a tmux popup; waiting up to ${wait_seconds}s" >&2
+		while [ ! -e "$ok" ] && kill -0 "$popup" 2>/dev/null; do
+			if [ "$waited" -ge "$limit" ]; then
+				timed_out=1
+				tmux display-popup -c "$client" -C
+				break
+			fi
+			sleep 0.3
+			waited=$((waited + 1))
+		done
+	else
+		window="$(tmux new-window -P -F '#{window_id}' -t "$session:" -n commit -c "$top" \
+			-e "MSG=$msg" -e "OK=$ok" -e NVIM_COMMIT_REVIEW=1 "$editor")"
+		echo "commit message is open for the user in tmux window $window; waiting up to ${wait_seconds}s" >&2
+		while [ ! -e "$ok" ] && tmux list-windows -t "$session" -F '#{window_id}' | grep -qx "$window"; do
+			if [ "$waited" -ge "$limit" ]; then
+				timed_out=1
+				break
+			fi
+			sleep 0.3
+			waited=$((waited + 1))
+		done
+	fi
+
+	# The list of changes is not part of the message, whatever way the editor was left.
+	# Only its own comment lines go; text the user typed below it stays.
+	sed -i '/^# ---- Staged changes (not part of the message/,/^[^#]/{/^[^#]/!d}' "$msg"
+	git stripspace <"$msg" >"$msg.clean" && mv "$msg.clean" "$msg"
+
+	if [ "$timed_out" = 1 ]; then
+		echo "commit-msg: user did not answer in ${wait_seconds}s, committing the message as written." >&2
+	elif [ ! -e "$ok" ]; then
 		echo "commit-msg: commit message rejected by the user (editor closed with :cq). Ask the user what to change." >&2
 		exit 1
-	fi
-	if [ -e "$ok" ]; then
+	else
 		rm -f "$ok"
 		if ! git stripspace --strip-comments <"$msg" | grep -q .; then
 			echo "commit-msg: commit message was emptied by the user, commit aborted." >&2
