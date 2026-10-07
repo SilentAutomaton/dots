@@ -127,6 +127,9 @@ map("n", "<F1>", function()
     { "glow", "-s", "dark", "-w", tostring(width), vim.fn.stdpath("config") .. "/cheatsheet.md" },
     { env = { CLICOLOR_FORCE = "1" }, text = true },
     vim.schedule_wrap(function(result)
+      if not vim.api.nvim_buf_is_valid(buf) then
+        return
+      end
       vim.api.nvim_chan_send(channel, (result.stdout ~= "" and result.stdout or result.stderr):gsub("\n", "\r\n"))
     end)
   )
