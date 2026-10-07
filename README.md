@@ -15,6 +15,7 @@ Hyprland, a Quickshell shell and the tools around them, themed from one palette.
 | `theme/` | `~/.config/theme` |
 | `applications/` | `~/.local/share/applications` |
 | `xdg/mimeapps.list` | `~/.config/mimeapps.list` |
+| `xdg/xdg-desktop-portal/`, `xdg/xdg-desktop-portal-termfilechooser/` | `~/.config/<same name>` |
 | `dbus-1/` | `~/.local/share/dbus-1` |
 | `bin/xdg-terminal-exec`, `bin/filemanager1-yazi` | `~/.local/bin` |
 | `git/hooks/` | `~/.config/git/hooks`, read through `core.hooksPath` |
@@ -39,6 +40,9 @@ rsync -a $d/applications/ ~/.local/share/applications/
 install -D -m 644 $d/dbus-1/services/org.freedesktop.FileManager1.service ~/.local/share/dbus-1/services/org.freedesktop.FileManager1.service
 install -m 755 $d/bin/xdg-terminal-exec $d/bin/filemanager1-yazi ~/.local/bin/
 cp $d/xdg/mimeapps.list ~/.config/mimeapps.list
+rsync -a $d/xdg/xdg-desktop-portal/ ~/.config/xdg-desktop-portal/
+rsync -a $d/xdg/xdg-desktop-portal-termfilechooser/ ~/.config/xdg-desktop-portal-termfilechooser/
+systemctl --user restart xdg-desktop-portal
 rsync -a $d/git/hooks/ ~/.config/git/hooks/
 git config --global core.hooksPath ~/.config/git/hooks
 rsync -a $d/zsh/.sh/ ~/.sh/
@@ -69,6 +73,8 @@ cp ~/.local/share/applications/nvim-kitty.desktop ~/.local/share/applications/ya
 # rsync reads .gitignore without its ! exceptions, so the one hand-written yazi plugin is copied on its own
 rsync -a ~/.config/yazi/plugins/dragon.yazi/ $d/yazi/plugins/dragon.yazi/
 cp ~/.config/mimeapps.list $d/xdg/
+rsync -a ~/.config/xdg-desktop-portal/ $d/xdg/xdg-desktop-portal/
+rsync -a ~/.config/xdg-desktop-portal-termfilechooser/ $d/xdg/xdg-desktop-portal-termfilechooser/
 cp ~/.local/share/dbus-1/services/org.freedesktop.FileManager1.service $d/dbus-1/services/
 cp ~/.local/bin/xdg-terminal-exec ~/.local/bin/filemanager1-yazi $d/bin/
 rsync -a ~/.config/git/hooks/ $d/git/hooks/
@@ -212,6 +218,14 @@ The "Show in folder" button of browsers and chat apps calls the D-Bus service
 The `dragon.yazi` plugin starts `dragon-drop` for drag and drop out of yazi and
 for dropping files into a folder; `hypr/modules/rules.lua` floats and pins
 its window. Super+Shift+F still opens Nautilus.
+
+The "Open file" and "Save as" dialogs of browsers and GTK apps open yazi in a
+floating kitty through `xdg-desktop-portal-termfilechooser`: the user
+`hyprland-portals.conf` picks it for FileChooser, and its config starts kitty
+with the class `yazi-picker` (without `-1`, so the portal waits for yazi). GTK
+apps need `GTK_USE_PORTAL=1`; LibreWolf needs
+`widget.use-xdg-desktop-portal.file-picker` set to 1 in its profile. To go back,
+delete the user `hyprland-portals.conf` and restart `xdg-desktop-portal`.
 
 ## Keys
 

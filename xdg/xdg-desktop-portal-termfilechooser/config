@@ -1,0 +1,7 @@
+[filechooser]
+cmd=yazi-wrapper.sh
+default_dir=$HOME
+; kitty without -1: a separate process, so the portal waits until yazi exits
+env=TERMCMD=kitty --class yazi-picker --title termfilechooser
+open_mode=suggested
+save_mode=suggested
