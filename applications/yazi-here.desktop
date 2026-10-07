@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Yazi in kitty
+GenericName=File Manager
+Comment=Browse folders with yazi inside a kitty window
+Exec=kitty -1 --class yazi -e yazi %f
+Terminal=false
+Type=Application
+Icon=yazi
+Categories=System;FileManager;
+MimeType=inode/directory;

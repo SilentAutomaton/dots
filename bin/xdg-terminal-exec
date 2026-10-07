@@ -1,0 +1,12 @@
+#!/bin/sh
+# Runs a command in the terminal named by $TERMINAL (kitty -1 by default).
+# With no command it opens the terminal itself. gio and GNOME apps call this
+# to start Terminal=true desktop entries.
+[ "$1" = "-e" ] && shift
+[ "$1" = "--" ] && shift
+terminal=${TERMINAL:-kitty -1}
+if [ $# -eq 0 ]; then
+    # $terminal is split on purpose: it holds the command and its flags
+    exec $terminal
+fi
+exec $terminal -e "$@"

@@ -14,6 +14,10 @@ Hyprland, a Quickshell shell and the tools around them, themed from one palette.
 | `zsh/.zshrc`, `zsh/.zshenv`, `zsh/.sh/` | `~/.zshrc`, `~/.zshenv`, `~/.sh` |
 | `theme/` | `~/.config/theme` |
 | `applications/` | `~/.local/share/applications` |
+| `xdg/mimeapps.list` | `~/.config/mimeapps.list` |
+| `dbus-1/` | `~/.local/share/dbus-1` |
+| `bin/xdg-terminal-exec`, `bin/filemanager1-yazi` | `~/.local/bin` |
+| `git/hooks/` | `~/.config/git/hooks`, read through `core.hooksPath` |
 
 ## Install
 
@@ -32,6 +36,11 @@ done
 rsync -a $d/zsh/environment.d/ ~/.config/environment.d/
 rsync -a $d/shell/ ~/.config/quickshell/shell/
 rsync -a $d/applications/ ~/.local/share/applications/
+install -D -m 644 $d/dbus-1/services/org.freedesktop.FileManager1.service ~/.local/share/dbus-1/services/org.freedesktop.FileManager1.service
+install -m 755 $d/bin/xdg-terminal-exec $d/bin/filemanager1-yazi ~/.local/bin/
+cp $d/xdg/mimeapps.list ~/.config/mimeapps.list
+rsync -a $d/git/hooks/ ~/.config/git/hooks/
+git config --global core.hooksPath ~/.config/git/hooks
 rsync -a $d/zsh/.sh/ ~/.sh/
 cp $d/zsh/.zshrc $d/zsh/.zshenv ~/
 [ -e ~/.sh/env.local ] || cp $d/zsh/.sh/env.local.example ~/.sh/env.local   # then fill in the key
@@ -56,6 +65,13 @@ rsync -a --relative --delete --exclude-from=$d/.gitignore \
 cd ~/.config/quickshell && rsync -a --relative --delete shell $d/
 cp ~/.zshrc ~/.zshenv $d/zsh/ && rsync -a --exclude env.local ~/.sh/ $d/zsh/.sh/
 cp ~/.local/share/applications/discord-AM.desktop $d/applications/
+cp ~/.local/share/applications/nvim-kitty.desktop ~/.local/share/applications/yazi-here.desktop $d/applications/
+# rsync reads .gitignore without its ! exceptions, so the one hand-written yazi plugin is copied on its own
+rsync -a ~/.config/yazi/plugins/dnd.yazi/ $d/yazi/plugins/dnd.yazi/
+cp ~/.config/mimeapps.list $d/xdg/
+cp ~/.local/share/dbus-1/services/org.freedesktop.FileManager1.service $d/dbus-1/services/
+cp ~/.local/bin/xdg-terminal-exec ~/.local/bin/filemanager1-yazi $d/bin/
+rsync -a ~/.config/git/hooks/ $d/git/hooks/
 ```
 
 ## OpenSnitch
@@ -181,6 +197,21 @@ matrix-news-viewer in place of the image. Install it
 with `cargo install --path . --root ~/.local`. "Refresh news" runs
 `newsboat -x reload`; nothing else goes to the network. With `preset = "theme"`
 in its config the rain takes the palette colours from `theme.toml`.
+
+## Files and folders
+
+Yazi replaces Nautilus for everyday work. `mimeapps.list` sends folders to
+yazi, text and source files to neovim in kitty, archives to xarchiver and
+video to mpv. `nvim-kitty.desktop` and `yazi-here.desktop` start those through
+`kitty -1`, and `xdg-terminal-exec` does the same for Terminal=true entries.
+The "Show in folder" button of browsers and chat apps calls the D-Bus service
+`org.freedesktop.FileManager1`; `dbus-1/services` points it at
+`filemanager1-yazi`, which opens yazi. Stop a running Nautilus once
+(`nautilus -q`), because it keeps that name while it lives.
+
+The `dnd.yazi` plugin starts `dragon-drop` for drag and drop out of yazi and
+for dropping files into a folder; `hypr/modules/rules.lua` floats and pins
+its window. Super+Shift+F still opens Nautilus.
 
 ## Keys
 
