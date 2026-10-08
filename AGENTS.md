@@ -22,7 +22,7 @@ Hyprland --verify-config -c hypr/hyprland.lua && qs -p shell 2>&1 | grep -E 'ERR
 
 ## Code
 
-`~/.config/claude/templates/agents/codestyle.md`, the same standard at every
+[`codestyle.md`](codestyle.md), the same standard at every
 tier. This project has more than one module, so the modularity rules apply.
 
 ## Rules

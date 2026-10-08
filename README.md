@@ -2,13 +2,22 @@
 
 Hyprland, a Quickshell shell and the tools around them, themed from one palette.
 
+These started from [illogical-impulse](https://github.com/end-4/dots-hyprland)
+by end-4, whose dots were really cool but too bloated. So I debloated them to
+my preferences and then rebloated again... to my preferences. Since then they
+have been rewritten almost completely.
+
+These are my personal dots, written for one machine (Arch Linux, an Intel iGPU
+plus an RTX 2070). You are free to use them and change them however you like,
+but they are not meant to be universal.
+
 ## Layout
 
 | Directory | Copied to |
 |---|---|
 | `hypr/` | `~/.config/hypr` |
 | `shell/` | `~/.config/quickshell/shell` |
-| `modular_overlay/` | its own repository, see its README |
+| `modular_overlay/` | its own repository, [modular_overlay](https://github.com/SilentAutomaton/modular_overlay) |
 | `kitty/ foot/ fuzzel/ wlogout/ tmux/ yazi/ glow/ nvim/ btop/ mpv/ fontconfig/ gtk-3.0/ gtk-4.0/` | `~/.config/<same name>` |
 | `zsh/environment.d/` | `~/.config/environment.d` |
 | `zsh/.zshrc`, `zsh/.zshenv`, `zsh/.sh/` | `~/.zshrc`, `~/.zshenv`, `~/.sh` |
@@ -52,6 +61,14 @@ cp $d/zsh/.zshrc $d/zsh/.zshenv ~/
 ~/.config/theme/apply
 ```
 
+The overlay lives in its own repository. Clone it anywhere and follow its
+README; the Hyprland config here finds it by its installed path,
+`~/.config/quickshell/overlay`, not by where the clone sits:
+
+```
+git clone https://github.com/SilentAutomaton/modular_overlay
+```
+
 Log out and back in after the first install: Hyprland reads `hyprland.lua`
 only at start.
 
@@ -62,7 +79,7 @@ Paths stay relative to `~/.config`, so the anchored `.gitignore` patterns keep
 plugins, rendered colours and local files out.
 
 ```
-d=~/proj/code/dots
+d=/path/to/dots
 cd ~/.config
 rsync -a --relative --delete --exclude-from=$d/.gitignore \
     hypr kitty foot fuzzel wlogout tmux yazi glow nvim btop mpv fontconfig gtk-3.0 gtk-4.0 theme $d/
@@ -199,7 +216,7 @@ Obsidian: Settings, Appearance, Themes. Obsidian reloads it on each apply.
 ## Matrix wallpaper
 
 Settings (Super+I), Appearance, Wallpaper: "Matrix news" runs
-matrix-news-viewer in place of the image. Install it
+[matrix-news-viewer](https://github.com/SilentAutomaton/matrix_news_viewer) in place of the image. Install it
 with `cargo install --path . --root ~/.local`. "Refresh news" runs
 `newsboat -x reload`; nothing else goes to the network. With `preset = "theme"`
 in its config the rain takes the palette colours from `theme.toml`.
@@ -264,3 +281,7 @@ delete the user `hyprland-portals.conf` and restart `xdg-desktop-portal`.
 | Super+S, Super+Alt+S | Scratchpad, send to scratchpad |
 | Super+arrows, Super+Shift+arrows | Focus, move window |
 | Super+; and Super+' | Split ratio |
+
+## License
+
+GPL-3.0, the same as illogical-impulse.
