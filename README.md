@@ -23,6 +23,7 @@ but they are not meant to be universal.
 | `zsh/.zshrc`, `zsh/.zshenv`, `zsh/.sh/` | `~/.zshrc`, `~/.zshenv`, `~/.sh` |
 | `theme/` | `~/.config/theme` |
 | `applications/` | `~/.local/share/applications` |
+| `easyeffects/input/` | `~/.local/share/easyeffects/input` |
 | `xdg/mimeapps.list` | `~/.config/mimeapps.list` |
 | `xdg/xdg-desktop-portal/`, `xdg/xdg-desktop-portal-termfilechooser/` | `~/.config/<same name>` |
 | `dbus-1/` | `~/.local/share/dbus-1` |
@@ -46,6 +47,7 @@ done
 rsync -a $d/zsh/environment.d/ ~/.config/environment.d/
 rsync -a $d/shell/ ~/.config/quickshell/shell/
 rsync -a $d/applications/ ~/.local/share/applications/
+install -D -m 644 $d/easyeffects/input/webcam_voice.json ~/.local/share/easyeffects/input/webcam_voice.json
 install -D -m 644 $d/dbus-1/services/org.freedesktop.FileManager1.service ~/.local/share/dbus-1/services/org.freedesktop.FileManager1.service
 install -m 755 $d/bin/xdg-terminal-exec $d/bin/filemanager1-yazi ~/.local/bin/
 cp $d/xdg/mimeapps.list ~/.config/mimeapps.list
@@ -86,6 +88,7 @@ rsync -a --relative --delete --exclude-from=$d/.gitignore \
 cd ~/.config/quickshell && rsync -a --relative --delete shell $d/
 cp ~/.zshrc ~/.zshenv $d/zsh/ && rsync -a --exclude env.local ~/.sh/ $d/zsh/.sh/
 cp ~/.local/share/applications/discord-AM.desktop $d/applications/
+cp ~/.local/share/easyeffects/input/webcam_voice.json $d/easyeffects/input/
 cp ~/.local/share/applications/nvim-kitty.desktop ~/.local/share/applications/yazi-here.desktop $d/applications/
 # rsync reads .gitignore without its ! exceptions, so the one hand-written yazi plugin is copied on its own
 rsync -a ~/.config/yazi/plugins/dragon.yazi/ $d/yazi/plugins/dragon.yazi/
