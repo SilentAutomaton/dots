@@ -122,3 +122,6 @@ if plugin then
 end
 hl.layer_rule({ match = { namespace = "overlay:stack" }, animation = "fade" })
 hl.layer_rule({ match = { namespace = "overlay:details" }, no_anim = true })
+-- The overlay terminal keeps a faint background; the blur keeps its text
+-- readable on any picture. Without xray off it blurs only the wallpaper.
+hl.layer_rule({ match = { namespace = "overlay:terminal-kitty" }, blur = true, xray = false })

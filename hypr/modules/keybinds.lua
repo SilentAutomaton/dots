@@ -128,3 +128,5 @@ hl.bind("CTRL + SHIFT + Escape", exec("kitty -1 btop"))
 
 -- Overlay interactive mode (Super+`), by keycode for the Russian layout
 hl.bind("SUPER + code:49", shell("overlayToggle"))
+-- The overlay terminal (Super+Shift+`), when the module is linked in
+hl.bind("SUPER + SHIFT + code:49", shell("overlayTerminal"))
