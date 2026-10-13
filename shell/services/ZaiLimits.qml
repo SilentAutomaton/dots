@@ -15,7 +15,7 @@ Singleton {
     property bool loaded: false
     property string error: ""
     property string lastRefresh: ""
-    property var data: ({}) // { plan, rows: [{label, pct, resetStr}] }
+    property var data: ({}) // { plan, rows: [{label, pct, resetStr}], credits }
 
     readonly property var unitNames: ({ 2: "minute", 3: "hour", 4: "day", 5: "month", 6: "week" })
 
@@ -88,6 +88,26 @@ Singleton {
         return { "plan": d.level || "", "rows": rows };
     }
 
+    function balance(body) {
+        const d = body?.success ? body.data : null;
+        if (!d || typeof d.availableBalance !== "number")
+            return null;
+        const limit = (d.rechargeAmount || 0) + (d.giveAmount || 0);
+        return {
+            "label": "API balance",
+            "used": d.totalSpendAmount || 0,
+            "limit": limit,
+            "remaining": d.availableBalance,
+            "pct": limit > 0 ? (d.totalSpendAmount || 0) / limit * 100 : 0,
+            "cur": "$"
+        };
+    }
+
+    function block(text) {
+        const lines = text.trim().split("\n");
+        return { "code": lines[lines.length - 1].trim(), "body": lines.slice(0, -1).join("\n") };
+    }
+
     // Off by default: each refresh is a request against the subscription API.
     Timer {
         interval: Config.options.sidebar.usage.refreshMinutes * 60000
@@ -102,8 +122,8 @@ Singleton {
         // The key goes to curl through a pipe, so it never shows up in the process list.
         command: ["bash", "-c", "C=\"$HOME/.config/zai/key.json\" && "
             + "H=$(jq -e -r '.apiKey // empty | \"Authorization: \" + .' \"$C\" 2>/dev/null) || { printf 'NOKEY\\n'; exit 0; } && "
-            + "printf '%s\\n' \"$H\" | "
-            + "curl -s -w '\\n%{http_code}' -H @- -H 'Accept-Language: en-US,en' https://api.z.ai/api/monitor/usage/quota/limit"]
+            + "get() { printf '%s\\n' \"$H\" | curl -s -w '\\n%{http_code}' -H @- -H 'Accept-Language: en-US,en' \"https://api.z.ai/api/$1\"; } && "
+            + "get monitor/usage/quota/limit && printf '\\n---\\n' && get biz/account/query-customer-account-report"]
         stdout: StdioCollector {
             onStreamFinished: {
                 root.loading = false;
@@ -111,12 +131,11 @@ Singleton {
                 if (raw.length === 0) { root.error = "No response — is jq/curl available?"; return; }
                 if (raw === "NOKEY") { root.error = "No key — put it in ~/.config/zai/key.json"; return; }
                 try {
-                    const lines = text.split("\n");
-                    const code = lines[lines.length - 1].trim();
-                    const body = lines.slice(0, -1).join("\n");
-                    if (code !== "200") { root.error = `HTTP ${code} — check the z.ai key`; return; }
-                    const parsed = root.refine(JSON.parse(body));
-                    if (parsed.rows.length === 0) { root.error = "No subscription windows on this key"; return; }
+                    const [quota, bal] = text.split("\n---\n").map(root.block);
+                    if (quota.code !== "200") { root.error = `HTTP ${quota.code} — check the z.ai key`; return; }
+                    const parsed = root.refine(JSON.parse(quota.body));
+                    parsed.credits = bal && bal.code === "200" ? root.balance(JSON.parse(bal.body)) : null;
+                    if (parsed.rows.length === 0 && !parsed.credits) { root.error = "No subscription windows on this key"; return; }
                     root.data = parsed;
                     root.loaded = true;
                     root.lastRefresh = DateTime.time;

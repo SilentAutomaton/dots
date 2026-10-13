@@ -88,7 +88,7 @@ Item {
                 RowLayout {
                     Layout.fillWidth: true
                     StyledText {
-                        text: "Usage credits"
+                        text: root.d.credits.label || "Usage credits"
                         color: Appearance.colors.colOnLayer1
                     }
                     Item {
