@@ -16,8 +16,13 @@ Singleton {
     property string error: ""
     property string lastRefresh: ""
     property var data: ({}) // { plan, rows: [{label, pct, resetStr}], credits }
+    property real retryAt: 0
 
     function refresh() {
+        if (Date.now() < root.retryAt) {
+            root.error = `Rate limited, retry in ${Math.ceil((root.retryAt - Date.now()) / 60000)} min`;
+            return;
+        }
         root.loading = true;
         root.error = "";
         fetcher.running = false;
@@ -60,8 +65,44 @@ Singleton {
             })[code] || (code + " ");
     }
 
+    function windowName(kind) {
+        const k = (kind || "").toLowerCase();
+        if (k.includes("month"))
+            return "monthly";
+        if (k.includes("week") || k.includes("day"))
+            return "weekly";
+        if (k.includes("hour") || k.includes("session"))
+            return "session";
+        return kind;
+    }
+
+    // A model-scoped allowance (a weekly window only one model draws from) shows up
+    // only in limits[]; the matching legacy buckets stay null.
+    function scopedRows(d, rows) {
+        const seen = new Set(rows.map(r => r.label));
+        const out = [];
+        for (const e of d.limits || []) {
+            const model = e?.scope?.model;
+            if (!model || typeof e.percent !== "number")
+                continue;
+            const window = root.windowName(e.kind);
+            const name = model.display_name || model.id;
+            const label = window === "weekly" ? `Weekly (${name})` : `${name} ${window}`;
+            if (seen.has(label) || seen.has(`Weekly (${name.split(" ")[0]})`) && window === "weekly")
+                continue;
+            seen.add(label);
+            out.push({
+                "label": label,
+                "pct": e.percent,
+                "resetStr": root.relTime(e.resets_at)
+            });
+        }
+        return out;
+    }
+
     function refine(plan, d) {
         const rows = [root.limitRow("5-hour session", d.five_hour), root.limitRow("Weekly (all models)", d.seven_day), root.limitRow("Weekly (Opus)", d.seven_day_opus), root.limitRow("Weekly (Sonnet)", d.seven_day_sonnet)].filter(r => r !== null);
+        rows.push(...root.scopedRows(d, rows));
 
         let credits = null;
         const sp = d.spend;
@@ -96,15 +137,7 @@ Singleton {
 
     Process {
         id: fetcher
-        // The token goes to curl through a pipe, so it never shows up in the process list.
-        // An expired token is refreshed by Claude Code itself, then the request runs once more.
-        command: ["bash", "-c", "C=\"${CLAUDE_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/claude}/.credentials.json\"; "
-            + "get() { jq -r '\"Authorization: Bearer \" + .claudeAiOauth.accessToken' \"$C\" | "
-            + "curl -s -w '\\n%{http_code}' -H @- -H 'anthropic-beta: oauth-2025-04-20' \"https://api.anthropic.com/api/oauth/$1\"; }; "
-            + "U=$(get usage); "
-            + "[ \"${U##*$'\\n'}\" = 401 ] && claude auth status >/dev/null 2>&1 && U=$(get usage); "
-            + "P=$(get profile | sed '$d' | jq -r '.organization.organization_type // \"\" | sub(\"^claude_\"; \"\")' 2>/dev/null); "
-            + "printf '%s\\n%s' \"$P\" \"$U\""]
+        command: ["bash", "-c", Quickshell.shellPath("scripts/claude-usage.sh")]
         stdout: StdioCollector {
             onStreamFinished: {
                 root.loading = false;
@@ -112,11 +145,20 @@ Singleton {
                     root.error = "No response — is jq/curl available?";
                     return;
                 }
+                if (text.trim() === "EXPIRED") {
+                    root.error = "Token expired — start claude to refresh it";
+                    return;
+                }
                 try {
                     const lines = text.split("\n");
                     const plan = lines[0].trim();
-                    const code = lines[lines.length - 1].trim();
+                    const [code, retryAfter] = lines[lines.length - 1].trim().split(" ");
                     const body = lines.slice(1, -1).join("\n");
+                    if (code === "429") {
+                        root.retryAt = Date.now() + (parseInt(retryAfter) || 300) * 1000;
+                        root.refresh();
+                        return;
+                    }
                     if (code !== "200") {
                         root.error = `HTTP ${code} — run \`claude\` to re-auth`;
                         return;
