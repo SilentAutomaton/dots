@@ -47,8 +47,9 @@ vim.pack.add({
 for _, module in ipairs({
   "editing", "picker", "completion", "lsp", "format", "treesitter", "git", "agent", "markdown",
 }) do
-  -- The commit message editor that the git hook opens must not register a second IDE server.
-  if not (module == "agent" and vim.env.NVIM_COMMIT_REVIEW == "1") then
+  -- An editor opened by meatproxy (commit messages, secrets) must not register a second IDE
+  -- server or show the buffer to the agent.
+  if not (module == "agent" and vim.env.MEATPROXY) then
     require("plugins." .. module)
   end
 end

@@ -153,10 +153,12 @@ the answer comes in time. After that it is denied once, the card stays, and the
 answer becomes a rule for the next attempt. While a connection waits, the
 daemon denies other unknown connections without asking.
 
-`shell-askpass` asks for sudo passwords in the same place and shows the
-whole command. It takes the context and the danger check from
-`/usr/local/bin/claude-askpass` and hands over to it when the overlay is not
-running.
+`meatproxy-overlay` asks for sudo passwords and other single-line meatproxy
+secrets in the same place and shows the whole command. It is the `exec` input
+method of meatproxy (`exec = ["/usr/local/bin/meatproxy-overlay"]` in
+`~/.config/meatproxy/config.toml`); when the overlay is not running it stays
+silent and meatproxy asks through tmux or zenity instead. `SUDO_ASKPASS`
+points at `meatproxy-askpass`.
 
 `orca-watch` reads OrcaSlicer's printer error dialogs over AT-SPI and shows
 them as cards in the same place, with the dialog's buttons. Orca draws these

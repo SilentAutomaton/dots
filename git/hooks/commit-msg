@@ -1,88 +1,43 @@
 #!/bin/sh
-# Opens the agent's commit message for editing before the commit: a popup over the tmux
-# client, or a window named "commit" when nobody is attached. The staged file list sits
-# under the message as comments and is cut out when the editor closes.
+# Opens the agent's commit message for editing before the commit, through meatproxy-edit:
+# a tmux popup over the attached client, or the next meatproxy input method when there is
+# none. The staged file list sits under the message as comments and never reaches it.
 # Off switch: touch ~/.local/state/commit-review-off (nvim <leader>tc toggles it).
 flag="${XDG_STATE_HOME:-$HOME/.local/state}/commit-review-off"
 wait_seconds="${COMMIT_REVIEW_WAIT:-100}"
-marker='# ---- Staged changes (not part of the message, removed on save) ----'
 
-if [ "$CLAUDECODE" = "1" ] && [ -n "$TMUX" ] && [ -n "$TMUX_PANE" ] && [ ! -e "$flag" ] && command -v tmux >/dev/null 2>&1; then
+if { [ "$CLAUDECODE" = "1" ] || [ "$HERMES_AGENT" = "true" ]; } && [ ! -e "$flag" ] && command -v meatproxy-edit >/dev/null 2>&1; then
 	msg="$(realpath "$1")"
-	ok="$msg.reviewed"
-	rm -f "$ok"
 	top="$(git rev-parse --show-toplevel)"
-	session="$(tmux display-message -p -t "$TMUX_PANE" '#{session_id}')"
-	info="$(tmux list-clients -t "$session" -F '#{client_name} #{client_width}' | head -n 1)"
-	client="${info% *}"
 	width=80
-	[ -n "$info" ] && width=$((${info##* } * 70 / 100 - 4))
-
-	{
-		printf '\n\n%s\n' "$marker"
-		git diff --cached --stat="$width" --no-color | sed 's/^/# /'
-	} >>"$msg"
-
-	started="$msg.started"
-	rm -f "$started"
-	editor='touch "$STARTED"; nvim -c "set ft=gitcommit" "$MSG" && touch "$OK"'
-	timed_out=0
-	waited=0
-	limit=$((wait_seconds * 10 / 3))
-
-	if [ -n "$client" ]; then
-		echo "commit message is open for the user in a tmux popup; waiting up to ${wait_seconds}s" >&2
-		while :; do
-			tmux display-popup -c "$client" -E -w 70% -h 85% -d "$top" -T " commit message " \
-				-e "MSG=$msg" -e "OK=$ok" -e "STARTED=$started" -e NVIM_COMMIT_REVIEW=1 "$editor" &
-			popup=$!
-			while [ ! -e "$ok" ] && kill -0 "$popup" 2>/dev/null; do
-				if [ "$waited" -ge "$limit" ]; then
-					timed_out=1
-					# only our own popup: another commit may hold the client
-					[ -e "$started" ] && tmux display-popup -c "$client" -C
-					break
-				fi
-				sleep 0.3
-				waited=$((waited + 1))
-			done
-			# A popup that closed without the editor ever starting could not be shown,
-			# because another commit's popup holds the client. Queue behind it.
-			[ "$timed_out" = 1 ] || [ -e "$ok" ] || [ -e "$started" ] && break
-			sleep 1
-			waited=$((waited + 3))
-		done
-	else
-		window="$(tmux new-window -P -F '#{window_id}' -t "$session:" -n commit -c "$top" \
-			-e "MSG=$msg" -e "OK=$ok" -e "STARTED=$started" -e NVIM_COMMIT_REVIEW=1 "$editor")"
-		echo "commit message is open for the user in tmux window $window; waiting up to ${wait_seconds}s" >&2
-		while [ ! -e "$ok" ] && tmux list-windows -t "$session" -F '#{window_id}' | grep -qx "$window"; do
-			if [ "$waited" -ge "$limit" ]; then
-				timed_out=1
-				break
-			fi
-			sleep 0.3
-			waited=$((waited + 1))
-		done
+	if [ -n "$TMUX_PANE" ]; then
+		session="$(tmux display-message -p -t "$TMUX_PANE" '#{session_id}')"
+		client_width="$(tmux list-clients -t "$session" -F '#{client_width}' | head -n 1)"
+		[ -n "$client_width" ] && width=$((client_width * 70 / 100 - 4))
 	fi
+	stat="$msg.stat"
+	git diff --cached --stat="$width" --no-color >"$stat"
 
-	# The list of changes is not part of the message, whatever way the editor was left.
-	# Only its own comment lines go; text the user typed below it stays.
-	sed -i '/^# ---- Staged changes (not part of the message/,/^[^#]/{/^[^#]/!d}' "$msg"
-	git stripspace <"$msg" >"$msg.clean" && mv "$msg.clean" "$msg"
+	echo "commit message is open for the user in a meatproxy window; waiting up to ${wait_seconds}s" >&2
+	meatproxy-edit "$msg" --purpose "commit message for $(basename "$top")" --caller agent \
+		--note-file "$stat" --file-name COMMIT_EDITMSG --wait "$wait_seconds" 2>/dev/null
+	status=$?
+	rm -f "$stat"
 
-	if [ "$timed_out" = 1 ]; then
-		echo "commit-msg: user did not answer in ${wait_seconds}s, committing the message as written." >&2
-	elif [ ! -e "$ok" ]; then
-		echo "commit-msg: commit message rejected by the user (editor closed with :cq). Ask the user what to change." >&2
-		exit 1
-	else
-		rm -f "$ok" "$started"
+	case "$status" in
+	0)
 		if ! git stripspace --strip-comments <"$msg" | grep -q .; then
 			echo "commit-msg: commit message was emptied by the user, commit aborted." >&2
 			exit 1
 		fi
-	fi
+		;;
+	1)
+		echo "commit-msg: commit message rejected by the user (editor closed with :cq or emptied). Ask the user what to change." >&2
+		exit 1
+		;;
+	5) echo "commit-msg: user did not answer in ${wait_seconds}s, committing the message as written." >&2 ;;
+	*) echo "commit-msg: no meatproxy window could be opened, committing the message as written." >&2 ;;
+	esac
 fi
 
 # chain to repo-local hook so husky/commitlint still run
