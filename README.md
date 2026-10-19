@@ -170,6 +170,18 @@ brings the dialog to the current workspace.
 `opensnitch/rules/allow-steam-games.json` lets every game and Proton build in
 both Steam libraries out without a prompt.
 
+## Time sync
+
+`systemd-timesyncd` stays disabled and OpenSnitch has no rule for it, so the
+clock never syncs in the background. `sync-time` starts it once: the OpenSnitch
+popup shows the request, Deny or Ctrl-C stops it, and the daemon stops again
+after the sync. `watchdog-clock` from the watchdogs repository reminds you when
+the last sync is older than a week.
+
+```
+sudo -A install -m 755 system/bin/sync-time /usr/local/bin/
+```
+
 ## NVIDIA power
 
 The RTX 2070 powers off while nothing uses it (runtime D3, fine-grained).

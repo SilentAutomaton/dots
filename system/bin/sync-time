@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# One NTP sync on demand. timesyncd stays off the rest of the time and OpenSnitch
+# has no rule for it, so the request always shows up as a popup and Deny stops it.
+set -euo pipefail
+(( EUID == 0 )) || exec sudo -A "$0" "$@"
+
+# timesyncd touches this file on every successful sync; its clock file it also
+# writes on a plain stop, so that one proves nothing.
+synced=/run/systemd/timesync/synchronized
+started=$(date +%s)
+
+trap 'systemctl stop systemd-timesyncd' EXIT
+trap 'exit 130' INT TERM
+
+echo "Time sync: allow systemd-timesyncd in the OpenSnitch popup. Deny or Ctrl-C cancels."
+systemctl start systemd-timesyncd
+for _ in $(seq 30); do
+    if [[ -e "${synced}" ]] && (( $(stat -c %Y "${synced}") >= started )); then
+        echo "Time synced: $(date)"
+        exit 0
+    fi
+    sleep 1
+done
+echo "Time not synced: no answer from the NTP server in 30 s. The request was denied or the network is down. Run sync-time again." >&2
+exit 1
